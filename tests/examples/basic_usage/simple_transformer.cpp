@@ -12,8 +12,8 @@
 #include <cmath>
 
 // Generate synthetic time series data (sine wave with noise)
-std::pair<LwTT::Core::Tensor, std::vector<float>> GenerateTestData(int batch_size, int seq_len, int d_model) {
-    LwTT::Core::Tensor data({batch_size, seq_len, d_model});
+std::pair<crllwtt::Core::Tensor, std::vector<float>> GenerateTestData(int batch_size, int seq_len, int d_model) {
+    crllwtt::Core::Tensor data({batch_size, seq_len, d_model});
     std::vector<float> timestamps;
 
     // Generate timestamps
@@ -43,21 +43,21 @@ int main() {
     std::cout << "=== LwTT Simple Transformer Example ===" << std::endl;
 
     // Initialize the library
-    LwTT::LibraryConfig lib_config;
+    crllwtt::LibraryConfig lib_config;
     lib_config.num_threads = 4;
     lib_config.enable_simd = true;
     lib_config.enable_logging = true;
     lib_config.log_level = 2; // Info level
 
-    if (!LwTT::Initialize(lib_config)) {
+    if (!crllwtt::Initialize(lib_config)) {
         std::cerr << "Failed to initialize LwTT library" << std::endl;
         return -1;
     }
 
-    std::cout << "LwTT version: " << LwTT::GetVersion() << std::endl;
-    std::cout << "Build info: " << LwTT::GetBuildInfo() << std::endl;
-    std::cout << "SIMD supported: " << (LwTT::IsSIMDSupported() ? "Yes" : "No") << std::endl;
-    std::cout << "Hardware threads: " << LwTT::GetHardwareConcurrency() << std::endl;
+    std::cout << "LwTT version: " << crllwtt::GetVersion() << std::endl;
+    std::cout << "Build info: " << crllwtt::GetBuildInfo() << std::endl;
+    std::cout << "SIMD supported: " << (crllwtt::IsSIMDSupported() ? "Yes" : "No") << std::endl;
+    std::cout << "Hardware threads: " << crllwtt::GetHardwareConcurrency() << std::endl;
     std::cout << std::endl;
 
     try {
@@ -69,7 +69,7 @@ int main() {
 
         // Create transformer using builder pattern
         std::cout << "Creating Transformer model..." << std::endl;
-        auto transformer = LwTT::Core::TransformerBuilder()
+        auto transformer = crllwtt::Core::TransformerBuilder()
             .SetModelDimension(d_model)
             .SetNumHeads(8)
             .SetNumLayers(4)
@@ -93,7 +93,7 @@ int main() {
         std::cout << "Input data shape: " << input_data.ShapeString() << std::endl;
 
         // Create time information with personal delay compensation
-        auto time_info = LwTT::Core::TimeEncodingUtils::CreateTimeInfo(timestamps, 0.05f);
+        auto time_info = crllwtt::Core::TimeEncodingUtils::CreateTimeInfo(timestamps, 0.05f);
         time_info.personal_delay = 0.05f; // 50ms personal delay
 
         // Set personal context
@@ -121,7 +121,7 @@ int main() {
 
         auto start_time = std::chrono::high_resolution_clock::now();
 
-        LwTT::Core::Tensor output;
+        crllwtt::Core::Tensor output;
         for (int i = 0; i < num_iterations; ++i) {
             output = transformer->Forward(input_data, nullptr, &time_info, i % 10); // Rotate personal IDs
         }
@@ -201,7 +201,7 @@ int main() {
             std::cout << "Model saved to: " << model_path << std::endl;
 
             // Create new model and load
-            auto loaded_transformer = LwTT::Core::TransformerBuilder()
+            auto loaded_transformer = crllwtt::Core::TransformerBuilder()
                 .SetModelDimension(d_model)
                 .SetNumHeads(8)
                 .SetNumLayers(4)
@@ -225,11 +225,11 @@ int main() {
 
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
-        LwTT::Cleanup();
+        crllwtt::Cleanup();
         return -1;
     }
 
     // Cleanup
-    LwTT::Cleanup();
+    crllwtt::Cleanup();
     return 0;
 }

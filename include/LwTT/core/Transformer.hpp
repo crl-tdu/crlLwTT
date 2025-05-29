@@ -19,7 +19,7 @@
 #include <fstream>
 #include <iosfwd>
 
-namespace LwTT {
+namespace crllwtt {
 namespace Core {
 
 /**

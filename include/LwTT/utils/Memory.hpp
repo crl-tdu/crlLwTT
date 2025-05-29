@@ -13,7 +13,7 @@
 #include <cstddef>
 #include <mutex>
 
-namespace LwTT {
+namespace crllwtt {
 namespace Utils {
 
 /**

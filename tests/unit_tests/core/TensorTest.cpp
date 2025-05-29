@@ -13,7 +13,7 @@ protected:
 TEST_F(TensorTest, Initialization) {
     // ベクトル
     EXPECT_NO_THROW({
-        LwTT::Core::Tensor vector({10});
+        crllwtt::Core::Tensor vector({10});
         EXPECT_EQ(vector.GetShape().size(), 1);
         EXPECT_EQ(vector.GetShape()[0], 10);
         EXPECT_EQ(vector.GetSize(), 10);
@@ -21,7 +21,7 @@ TEST_F(TensorTest, Initialization) {
     
     // 行列
     EXPECT_NO_THROW({
-        LwTT::Core::Tensor matrix({5, 10});
+        crllwtt::Core::Tensor matrix({5, 10});
         EXPECT_EQ(matrix.GetShape().size(), 2);
         EXPECT_EQ(matrix.GetShape()[0], 5);
         EXPECT_EQ(matrix.GetShape()[1], 10);
@@ -30,7 +30,7 @@ TEST_F(TensorTest, Initialization) {
     
     // 3次元テンソル
     EXPECT_NO_THROW({
-        LwTT::Core::Tensor tensor({2, 3, 4});
+        crllwtt::Core::Tensor tensor({2, 3, 4});
         EXPECT_EQ(tensor.GetShape().size(), 3);
         EXPECT_EQ(tensor.GetShape()[0], 2);
         EXPECT_EQ(tensor.GetShape()[1], 3);
@@ -40,7 +40,7 @@ TEST_F(TensorTest, Initialization) {
 }
 
 TEST_F(TensorTest, DataAccess) {
-    LwTT::Core::Tensor tensor({2, 3});
+    crllwtt::Core::Tensor tensor({2, 3});
     
     // 値の設定と取得
     tensor.SetValue({0, 0}, 1.0f);
@@ -65,8 +65,8 @@ TEST_F(TensorTest, DataAccess) {
 }
 
 TEST_F(TensorTest, Operations) {
-    LwTT::Core::Tensor a({2, 2});
-    LwTT::Core::Tensor b({2, 2});
+    crllwtt::Core::Tensor a({2, 2});
+    crllwtt::Core::Tensor b({2, 2});
     
     // 値を設定
     a.SetValue({0, 0}, 1.0f);
@@ -81,7 +81,7 @@ TEST_F(TensorTest, Operations) {
     
     // 加算
     EXPECT_NO_THROW({
-        LwTT::Core::Tensor c = a.Add(b);
+        crllwtt::Core::Tensor c = a.Add(b);
         EXPECT_FLOAT_EQ(c.GetValue({0, 0}), 6.0f);
         EXPECT_FLOAT_EQ(c.GetValue({0, 1}), 8.0f);
         EXPECT_FLOAT_EQ(c.GetValue({1, 0}), 10.0f);
@@ -90,7 +90,7 @@ TEST_F(TensorTest, Operations) {
     
     // 乗算
     EXPECT_NO_THROW({
-        LwTT::Core::Tensor d = a.Multiply(b);
+        crllwtt::Core::Tensor d = a.Multiply(b);
         EXPECT_FLOAT_EQ(d.GetValue({0, 0}), 5.0f);
         EXPECT_FLOAT_EQ(d.GetValue({0, 1}), 12.0f);
         EXPECT_FLOAT_EQ(d.GetValue({1, 0}), 21.0f);
@@ -99,7 +99,7 @@ TEST_F(TensorTest, Operations) {
     
     // スカラー乗算
     EXPECT_NO_THROW({
-        LwTT::Core::Tensor e = a.MultiplyScalar(2.0f);
+        crllwtt::Core::Tensor e = a.MultiplyScalar(2.0f);
         EXPECT_FLOAT_EQ(e.GetValue({0, 0}), 2.0f);
         EXPECT_FLOAT_EQ(e.GetValue({0, 1}), 4.0f);
         EXPECT_FLOAT_EQ(e.GetValue({1, 0}), 6.0f);

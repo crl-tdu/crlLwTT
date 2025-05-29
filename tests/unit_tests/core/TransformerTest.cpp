@@ -16,23 +16,23 @@ protected:
         config.use_sparse_attention = false;
     }
 
-    LwTT::Core::TransformerConfig config;
+    crllwtt::Core::TransformerConfig config;
 };
 
 TEST_F(TransformerTest, Initialization) {
     ASSERT_NO_THROW({
-        auto transformer = std::make_unique<LwTT::Core::Transformer>(config);
+        auto transformer = std::make_unique<crllwtt::Core::Transformer>(config);
     });
 }
 
 TEST_F(TransformerTest, ForwardPass) {
-    auto transformer = std::make_unique<LwTT::Core::Transformer>(config);
+    auto transformer = std::make_unique<crllwtt::Core::Transformer>(config);
     
     // 入力テンソルの作成
-    LwTT::Core::Tensor input({1, 10, config.d_model});
+    crllwtt::Core::Tensor input({1, 10, config.d_model});
     
     // 時間情報の設定
-    LwTT::Core::TimeInfo time_info;
+    crllwtt::Core::TimeInfo time_info;
     for (int i = 0; i < 10; ++i) {
         time_info.timestamps.push_back(i * 0.1f);
     }

@@ -12,7 +12,7 @@
 #include <vector>
 #include <memory>
 
-namespace LwTT {
+namespace crllwtt {
 namespace Core {
 
 /**

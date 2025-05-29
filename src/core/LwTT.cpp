@@ -9,7 +9,7 @@
 #include <thread>
 #include <cstdio>
 
-namespace LwTT {
+namespace crllwtt {
 
 // Global state
 static bool g_initialized = false;

@@ -17,7 +17,7 @@
 #include <cstring>
 #include <ctime>
 
-namespace LwTT {
+namespace crllwtt {
 namespace Core {
 
 Transformer::Transformer(const TransformerConfig& config) 

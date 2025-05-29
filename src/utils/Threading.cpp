@@ -8,7 +8,7 @@
 #include "../../include/LwTT/utils/Threading.hpp"
 #include <algorithm>
 
-namespace LwTT {
+namespace crllwtt {
 namespace Utils {
 
 // ThreadPool implementation

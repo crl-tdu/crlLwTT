@@ -10,7 +10,7 @@
 #include <stdexcept>
 #include <algorithm>
 
-namespace LwTT {
+namespace crllwtt {
 namespace Core {
 
 TimeEncoding::TimeEncoding(const TimeEncodingConfig& config)

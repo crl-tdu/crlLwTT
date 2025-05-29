@@ -16,12 +16,12 @@ protected:
         config.personal_embed_dim = 32;
     }
 
-    LwTT::Core::TimeEncodingConfig config;
+    crllwtt::Core::TimeEncodingConfig config;
 };
 
 TEST_F(TimeEncodingTest, Initialization) {
     ASSERT_NO_THROW({
-        auto time_encoding = std::make_unique<LwTT::Core::TimeEncoding>(config);
+        auto time_encoding = std::make_unique<crllwtt::Core::TimeEncoding>(config);
     });
 }
 
@@ -33,7 +33,7 @@ TEST_F(TimeEncodingTest, TimeInfoCreation) {
     }
     
     // TimeInfoの作成
-    auto time_info = LwTT::Core::TimeEncodingUtils::CreateTimeInfo(timestamps, 0.05f);
+    auto time_info = crllwtt::Core::TimeEncodingUtils::CreateTimeInfo(timestamps, 0.05f);
     
     // 検証
     EXPECT_EQ(time_info.timestamps.size(), 10);
@@ -47,17 +47,17 @@ TEST_F(TimeEncodingTest, TimeInfoCreation) {
 }
 
 TEST_F(TimeEncodingTest, EncodingApplication) {
-    auto time_encoding = std::make_unique<LwTT::Core::TimeEncoding>(config);
+    auto time_encoding = std::make_unique<crllwtt::Core::TimeEncoding>(config);
     
     // 入力テンソルの作成
-    LwTT::Core::Tensor input({1, 10, 64});
+    crllwtt::Core::Tensor input({1, 10, 64});
     
     // TimeInfoの作成
     std::vector<float> timestamps;
     for (int i = 0; i < 10; ++i) {
         timestamps.push_back(i * 0.1f);
     }
-    auto time_info = LwTT::Core::TimeEncodingUtils::CreateTimeInfo(timestamps);
+    auto time_info = crllwtt::Core::TimeEncodingUtils::CreateTimeInfo(timestamps);
     
     // エンコーディングの適用
     ASSERT_NO_THROW({

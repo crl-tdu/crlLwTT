@@ -16,7 +16,7 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-namespace LwTT {
+namespace crllwtt {
 namespace Core {
 
 Tensor::Tensor() : data_(nullptr), size_(0) {

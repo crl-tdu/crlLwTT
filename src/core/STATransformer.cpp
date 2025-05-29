@@ -12,7 +12,7 @@
 #include <chrono>
 #include <random>
 
-namespace LwTT {
+namespace crllwtt {
 namespace Core {
 
 // TargetStateEvaluator implementation

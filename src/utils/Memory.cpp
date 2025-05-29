@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <stdexcept>
 
-namespace LwTT {
+namespace crllwtt {
 namespace Utils {
 
 // MemoryPool implementation

@@ -15,7 +15,7 @@
 /**
  * @brief Example meta-evaluation function for concentration optimization
  */
-class ConcentrationOptimizer : public LwTT::Core::MetaEvaluationFunction {
+class ConcentrationOptimizer : public crllwtt::Core::MetaEvaluationFunction {
 private:
     float target_concentration_ = 0.8f; // Target concentration level (0-1)
     float stress_penalty_weight_ = 0.5f; // Weight for stress penalty
@@ -24,8 +24,8 @@ public:
     ConcentrationOptimizer(float target_concentration = 0.8f, float stress_penalty = 0.5f)
         : target_concentration_(target_concentration), stress_penalty_weight_(stress_penalty) {}
     
-    float Evaluate(const LwTT::Core::Tensor& predicted_state, 
-                   const LwTT::Core::Tensor* uncertainty = nullptr) const override {
+    float Evaluate(const crllwtt::Core::Tensor& predicted_state, 
+                   const crllwtt::Core::Tensor* uncertainty = nullptr) const override {
         
         // Assume predicted_state contains [concentration, stress, fatigue, alertness]
         if (predicted_state.GetSize() < 4) {
@@ -67,9 +67,9 @@ public:
         return reward;
     }
     
-    LwTT::Core::Tensor ComputeGradient(const LwTT::Core::Tensor& predicted_state) const override {
+    crllwtt::Core::Tensor ComputeGradient(const crllwtt::Core::Tensor& predicted_state) const override {
         // Compute gradient of evaluation function w.r.t. predicted state
-        LwTT::Core::Tensor gradient({predicted_state.GetSize()});
+        crllwtt::Core::Tensor gradient({predicted_state.GetSize()});
         gradient.Fill(0.0f);
         
         if (predicted_state.GetSize() >= 4) {
@@ -105,11 +105,11 @@ public:
 /**
  * @brief Simulate human observable state (sensor data)
  */
-LwTT::Core::Tensor SimulateObservableState(int time_step) {
+crllwtt::Core::Tensor SimulateObservableState(int time_step) {
     // Simulate 8 observable parameters: heart rate, skin conductance, eye blink rate, 
     // posture stability, keystroke dynamics, mouse movement, facial expression, voice stress
     
-    LwTT::Core::Tensor obs_state({8});
+    crllwtt::Core::Tensor obs_state({8});
     float* data = obs_state.GetData();
     
     // Add some realistic variation with time
@@ -130,10 +130,10 @@ LwTT::Core::Tensor SimulateObservableState(int time_step) {
 /**
  * @brief Simulate actual human internal state (ground truth)
  */
-LwTT::Core::Tensor SimulateActualState(int time_step, const LwTT::Core::Tensor& control_input) {
+crllwtt::Core::Tensor SimulateActualState(int time_step, const crllwtt::Core::Tensor& control_input) {
     // Simulate 4 internal state parameters: concentration, stress, fatigue, alertness
     
-    LwTT::Core::Tensor actual_state({4});
+    crllwtt::Core::Tensor actual_state({4});
     float* data = actual_state.GetData();
     
     // Get control inputs (lighting, sound, temperature, notification frequency)
@@ -168,7 +168,7 @@ LwTT::Core::Tensor SimulateActualState(int time_step, const LwTT::Core::Tensor& 
 /**
  * @brief Print state information
  */
-void PrintState(const std::string& label, const LwTT::Core::Tensor& state) {
+void PrintState(const std::string& label, const crllwtt::Core::Tensor& state) {
     std::cout << label << ": [";
     for (int i = 0; i < state.GetSize(); ++i) {
         std::cout << std::fixed << std::setprecision(3) << state.GetData()[i];
@@ -182,14 +182,14 @@ int main() {
     std::cout << "Demonstrating real-time adaptive control for human state optimization" << std::endl;
     
     // Initialize the library
-    if (!LwTT::Initialize()) {
+    if (!crllwtt::Initialize()) {
         std::cerr << "Failed to initialize LwTT library" << std::endl;
         return -1;
     }
     
     try {
         // Configure STA Transformer
-        auto sta_config = LwTT::Core::STABuilder()
+        auto sta_config = crllwtt::Core::STABuilder()
             .SetObservableStateDim(8)      // 8 sensor inputs
             .SetControllableInputDim(4)    // 4 environmental controls
             .SetPredictedStateDim(4)       // 4 internal states to predict
@@ -209,7 +209,7 @@ int main() {
         const int person_id = 1;
         
         // Initial control input (lighting, sound, temperature, notifications)
-        LwTT::Core::Tensor control_input({4});
+        crllwtt::Core::Tensor control_input({4});
         control_input.GetData()[0] = 0.7f;  // Lighting
         control_input.GetData()[1] = 0.3f;  // Sound volume
         control_input.GetData()[2] = 0.6f;  // Temperature
@@ -227,7 +227,7 @@ int main() {
         for (int step = 0; step < simulation_steps; ++step) {
             // Create time information
             std::vector<float> timestamps = {static_cast<float>(step)};
-            auto time_info = LwTT::Core::TimeEncodingUtils::CreateTimeInfo(timestamps, 0.1f);
+            auto time_info = crllwtt::Core::TimeEncodingUtils::CreateTimeInfo(timestamps, 0.1f);
             
             // Simulate observable state (sensor data)
             auto observable_state = SimulateObservableState(step);
@@ -308,7 +308,7 @@ int main() {
         
         // Demonstrate sensitivity analysis
         std::cout << "\n=== Sensitivity Analysis ===" << std::endl;
-        auto time_info_final = LwTT::Core::TimeEncodingUtils::CreateTimeInfo({static_cast<float>(simulation_steps-1)}, 0.1f);
+        auto time_info_final = crllwtt::Core::TimeEncodingUtils::CreateTimeInfo({static_cast<float>(simulation_steps-1)}, 0.1f);
         auto sensitivity = sta_config->ComputeSensitivity(
             SimulateObservableState(simulation_steps-1), control_input, &time_info_final, person_id);
         
@@ -329,11 +329,11 @@ int main() {
         
     } catch (const std::exception& e) {
         std::cerr << "Error during simulation: " << e.what() << std::endl;
-        LwTT::Cleanup();
+        crllwtt::Cleanup();
         return -1;
     }
     
     // Cleanup
-    LwTT::Cleanup();
+    crllwtt::Cleanup();
     return 0;
 }

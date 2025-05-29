@@ -5,8 +5,8 @@
 #include <random>
 
 // ランダムテンソルを生成するヘルパー関数
-LwTT::Core::Tensor GenerateRandomTensor(const std::vector<int>& shape) {
-    LwTT::Core::Tensor tensor(shape);
+crllwtt::Core::Tensor GenerateRandomTensor(const std::vector<int>& shape) {
+    crllwtt::Core::Tensor tensor(shape);
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
@@ -19,18 +19,18 @@ LwTT::Core::Tensor GenerateRandomTensor(const std::vector<int>& shape) {
 }
 
 // TimeInfoを生成するヘルパー関数
-LwTT::Core::TimeInfo GenerateTimeInfo(int seq_len) {
+crllwtt::Core::TimeInfo GenerateTimeInfo(int seq_len) {
     std::vector<float> timestamps;
     for (int i = 0; i < seq_len; ++i) {
         timestamps.push_back(i * 0.01f);
     }
-    return LwTT::Core::TimeEncodingUtils::CreateTimeInfo(timestamps);
+    return crllwtt::Core::TimeEncodingUtils::CreateTimeInfo(timestamps);
 }
 
 // Transformerの順伝播のベンチマーク（小）
 static void BM_TransformerForward_Small(benchmark::State& state) {
     // 小さいモデルの設定
-    LwTT::Core::TransformerConfig config;
+    crllwtt::Core::TransformerConfig config;
     config.d_model = 64;
     config.n_heads = 4;
     config.n_layers = 2;
@@ -38,7 +38,7 @@ static void BM_TransformerForward_Small(benchmark::State& state) {
     config.enable_time_encoding = true;
     config.use_sparse_attention = false;
     
-    auto transformer = std::make_unique<LwTT::Core::Transformer>(config);
+    auto transformer = std::make_unique<crllwtt::Core::Transformer>(config);
     transformer->OptimizeForInference(3);
     
     // 入力テンソルの生成
@@ -58,7 +58,7 @@ static void BM_TransformerForward_Small(benchmark::State& state) {
 // Transformerの順伝播のベンチマーク（中）
 static void BM_TransformerForward_Medium(benchmark::State& state) {
     // 中程度のモデルの設定
-    LwTT::Core::TransformerConfig config;
+    crllwtt::Core::TransformerConfig config;
     config.d_model = 128;
     config.n_heads = 8;
     config.n_layers = 4;
@@ -66,7 +66,7 @@ static void BM_TransformerForward_Medium(benchmark::State& state) {
     config.enable_time_encoding = true;
     config.use_sparse_attention = false;
     
-    auto transformer = std::make_unique<LwTT::Core::Transformer>(config);
+    auto transformer = std::make_unique<crllwtt::Core::Transformer>(config);
     transformer->OptimizeForInference(3);
     
     // 入力テンソルの生成
@@ -86,7 +86,7 @@ static void BM_TransformerForward_Medium(benchmark::State& state) {
 // スパースアテンションのベンチマーク
 static void BM_SparseAttention(benchmark::State& state) {
     // モデルの設定
-    LwTT::Core::TransformerConfig config;
+    crllwtt::Core::TransformerConfig config;
     config.d_model = 128;
     config.n_heads = 8;
     config.n_layers = 4;
@@ -95,7 +95,7 @@ static void BM_SparseAttention(benchmark::State& state) {
     config.use_sparse_attention = true;
     config.sparsity_ratio = 0.1f; // 10%のスパース化
     
-    auto transformer = std::make_unique<LwTT::Core::Transformer>(config);
+    auto transformer = std::make_unique<crllwtt::Core::Transformer>(config);
     transformer->OptimizeForInference(3);
     
     // 入力テンソルの生成
@@ -115,7 +115,7 @@ static void BM_SparseAttention(benchmark::State& state) {
 // 不確実性推定のベンチマーク
 static void BM_UncertaintyEstimation(benchmark::State& state) {
     // モデルの設定
-    LwTT::Core::TransformerConfig config;
+    crllwtt::Core::TransformerConfig config;
     config.d_model = 128;
     config.n_heads = 8;
     config.n_layers = 4;
@@ -123,7 +123,7 @@ static void BM_UncertaintyEstimation(benchmark::State& state) {
     config.enable_time_encoding = true;
     config.use_sparse_attention = false;
     
-    auto transformer = std::make_unique<LwTT::Core::Transformer>(config);
+    auto transformer = std::make_unique<crllwtt::Core::Transformer>(config);
     
     // 入力テンソルの生成
     auto input = GenerateRandomTensor({static_cast<int>(state.range(0)), static_cast<int>(state.range(1)), config.d_model});
@@ -142,7 +142,7 @@ static void BM_UncertaintyEstimation(benchmark::State& state) {
 // マルチステップ予測のベンチマーク
 static void BM_MultiStepPrediction(benchmark::State& state) {
     // モデルの設定
-    LwTT::Core::TransformerConfig config;
+    crllwtt::Core::TransformerConfig config;
     config.d_model = 128;
     config.n_heads = 8;
     config.n_layers = 4;
@@ -150,7 +150,7 @@ static void BM_MultiStepPrediction(benchmark::State& state) {
     config.enable_time_encoding = true;
     config.use_sparse_attention = false;
     
-    auto transformer = std::make_unique<LwTT::Core::Transformer>(config);
+    auto transformer = std::make_unique<crllwtt::Core::Transformer>(config);
     
     // 入力テンソルの生成
     auto input = GenerateRandomTensor({static_cast<int>(state.range(0)), static_cast<int>(state.range(1)), config.d_model});
@@ -169,7 +169,7 @@ static void BM_MultiStepPrediction(benchmark::State& state) {
 // 時間エンコーディングのベンチマーク
 static void BM_TimeEncoding(benchmark::State& state) {
     // 時間エンコーディングの設定
-    LwTT::Core::TimeEncodingConfig config;
+    crllwtt::Core::TimeEncodingConfig config;
     config.d_model = 128;
     config.max_seq_len = static_cast<int>(state.range(1));
     config.time_scale = 1.0f;
@@ -177,7 +177,7 @@ static void BM_TimeEncoding(benchmark::State& state) {
     config.enable_time_scaling = true;
     config.personal_embed_dim = 32;
     
-    auto time_encoding = std::make_unique<LwTT::Core::TimeEncoding>(config);
+    auto time_encoding = std::make_unique<crllwtt::Core::TimeEncoding>(config);
     
     // 入力テンソルの生成
     auto input = GenerateRandomTensor({static_cast<int>(state.range(0)), static_cast<int>(state.range(1)), config.d_model});

@@ -34,8 +34,7 @@
 #include "LwTT/utils/Memory.hpp"
 #include "LwTT/utils/Threading.hpp"
 
-namespace crl {
-namespace lwtt {
+namespace crllwtt {
 
 /**
  * @brief Library initialization
@@ -93,7 +92,6 @@ struct LibraryConfig {
  */
 bool Initialize(const LibraryConfig& config);
 
-} // namespace lwtt
-} // namespace crl
+} // namespace crllwtt
 
 #endif // LWTT_HPP

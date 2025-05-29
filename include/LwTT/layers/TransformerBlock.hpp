@@ -12,7 +12,7 @@
 #include "../core/TimeEncoding.hpp"
 #include <memory>
 
-namespace LwTT {
+namespace crllwtt {
 namespace Layers {
 
 /**

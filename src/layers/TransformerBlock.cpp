@@ -9,7 +9,7 @@
 #include <stdexcept>
 #include <cmath>
 
-namespace LwTT {
+namespace crllwtt {
 namespace Layers {
 
 // Forward declarations for internal components

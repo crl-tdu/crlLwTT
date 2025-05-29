@@ -11,7 +11,7 @@
 #include <vector>
 #include <string>
 
-namespace LwTT {
+namespace crllwtt {
 namespace Core {
 
 /**
