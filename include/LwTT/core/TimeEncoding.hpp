@@ -30,6 +30,12 @@ struct TimeInfo {
     float personal_delay = 0.0f;          ///< Individual response delay (tau)
     std::vector<float> delay_weights;     ///< Delay-dependent weights
 
+    // Environmental input temporal influence (STA extension)
+    std::vector<std::vector<float>> environment_input_history; ///< History of environment inputs u[k-N:k]
+    std::vector<float> environment_influence_weights;          ///< Temporal influence weights ψ(u_influence)
+    float environment_adaptation_rate = 0.01f;                ///< Adaptation rate for environment influence
+    int environment_memory_length = 10;                       ///< Number of past environment inputs to consider
+
     // Contextual information
     std::vector<float> task_difficulty;   ///< Task difficulty at each step
     std::vector<int> operation_modes;     ///< Operation mode indicators
@@ -56,6 +62,55 @@ struct TimeInfo {
         ComputeDelayWeights();
     }
 
+    /**
+     * @brief Update environment input history and compute influence weights
+     * @param current_input Current environment input vector
+     * @param timestamp Current timestamp
+     */
+    void UpdateEnvironmentInput(const std::vector<float>& current_input, float timestamp) {
+        // Add current input to history
+        environment_input_history.push_back(current_input);
+        
+        // Maintain memory length
+        if (environment_input_history.size() > static_cast<size_t>(environment_memory_length)) {
+            environment_input_history.erase(environment_input_history.begin());
+        }
+        
+        ComputeEnvironmentInfluenceWeights();
+    }
+
+    /**
+     * @brief Get environment influence encoding for time-aware transformer
+     * @param pos Position in sequence
+     * @param d_model Model dimension
+     * @return Environment influence encoding
+     */
+    std::vector<float> GetEnvironmentInfluence(int pos, int d_model) const {
+        std::vector<float> influence(d_model, 0.0f);
+        
+        if (environment_input_history.empty() || environment_influence_weights.empty()) {
+            return influence;
+        }
+        
+        // Weighted combination of past environment inputs
+        for (size_t i = 0; i < environment_input_history.size() && i < environment_influence_weights.size(); ++i) {
+            float weight = environment_influence_weights[i];
+            const auto& input_vec = environment_input_history[i];
+            
+            for (size_t j = 0; j < input_vec.size() && j < static_cast<size_t>(d_model); ++j) {
+                // Apply sinusoidal encoding with environment influence
+                float env_influence = input_vec[j] * weight;
+                influence[j] += std::sin(pos / std::pow(10000.0f, 2.0f * j / d_model) + env_influence);
+                
+                if (j + 1 < static_cast<size_t>(d_model)) {
+                    influence[j + 1] += std::cos(pos / std::pow(10000.0f, 2.0f * j / d_model) + env_influence);
+                }
+            }
+        }
+        
+        return influence;
+    }
+
 private:
     void ComputeDelayWeights() {
         delay_weights.clear();
@@ -65,6 +120,19 @@ private:
             float adjusted_time = timestamps[i] - personal_delay;
             float weight = std::exp(-std::abs(adjusted_time) / time_scale);
             delay_weights.push_back(weight);
+        }
+    }
+
+    void ComputeEnvironmentInfluenceWeights() {
+        environment_influence_weights.clear();
+        environment_influence_weights.reserve(environment_input_history.size());
+
+        // Compute exponential decay weights for environment influence
+        // More recent inputs have higher influence
+        for (size_t i = 0; i < environment_input_history.size(); ++i) {
+            float age = static_cast<float>(environment_input_history.size() - 1 - i);
+            float weight = std::exp(-age * environment_adaptation_rate);
+            environment_influence_weights.push_back(weight);
         }
     }
 };
@@ -248,6 +316,27 @@ namespace TimeEncodingUtils {
     std::vector<int> DetectConceptDrift(const std::vector<float>& data,
                                        int window_size,
                                        float threshold);
+
+    /**
+     * @brief Create TimeInfo with environment input integration
+     * @param timestamps Vector of timestamps
+     * @param environment_inputs History of environment inputs
+     * @param personal_delay Personal delay parameter
+     * @return TimeInfo structure with environment influence
+     */
+    TimeInfo CreateTimeInfoWithEnvironment(const std::vector<float>& timestamps,
+                                         const std::vector<std::vector<float>>& environment_inputs,
+                                         float personal_delay = 0.0f);
+
+    /**
+     * @brief Update TimeInfo with new environment input
+     * @param time_info TimeInfo to update
+     * @param current_input Current environment input
+     * @param timestamp Current timestamp
+     */
+    void UpdateTimeInfoEnvironment(TimeInfo& time_info,
+                                 const std::vector<float>& current_input,
+                                 float timestamp);
 
     /**
      * @brief Interpolate missing timestamps

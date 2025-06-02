@@ -180,6 +180,11 @@ if(LWTT_BUILD_TESTS)
             target_link_libraries(${TEST_NAME} PRIVATE LwTT_static)
         endif()
         
+        # Link with GoogleTest for test files
+        if(TARGET gtest AND TARGET gtest_main)
+            target_link_libraries(${TEST_NAME} PRIVATE gtest gtest_main)
+        endif()
+        
         # Include directories
         target_include_directories(${TEST_NAME} PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/include

@@ -260,7 +260,59 @@ TimeInfo CreateTimeInfo(const std::vector<float>& timestamps, float personal_del
     info.timestamps = timestamps;
     info.personal_delay = personal_delay;
     info.time_scale = 1.0f;
+    info.ComputeDeltas();
+    if (personal_delay != 0.0f) {
+        info.SetPersonalDelay(personal_delay);
+    }
     return info;
+}
+
+TimeInfo CreateTimeInfoWithEnvironment(const std::vector<float>& timestamps,
+                                     const std::vector<std::vector<float>>& environment_inputs,
+                                     float personal_delay) {
+    TimeInfo info = CreateTimeInfo(timestamps, personal_delay);
+    
+    // Initialize environment input history
+    info.environment_input_history = environment_inputs;
+    info.environment_memory_length = std::max(10, static_cast<int>(environment_inputs.size()));
+    
+    // Compute initial environment influence weights
+    if (!environment_inputs.empty()) {
+        info.environment_influence_weights.clear();
+        info.environment_influence_weights.reserve(environment_inputs.size());
+        
+        for (size_t i = 0; i < environment_inputs.size(); ++i) {
+            float age = static_cast<float>(environment_inputs.size() - 1 - i);
+            float weight = std::exp(-age * info.environment_adaptation_rate);
+            info.environment_influence_weights.push_back(weight);
+        }
+    }
+    
+    return info;
+}
+
+void UpdateTimeInfoEnvironment(TimeInfo& time_info,
+                             const std::vector<float>& current_input,
+                             float timestamp) {
+    // Add timestamp if provided
+    if (!time_info.timestamps.empty() && timestamp > time_info.timestamps.back()) {
+        time_info.timestamps.push_back(timestamp);
+        time_info.ComputeDeltas();
+    }
+    
+    // Update environment input using existing method
+    time_info.UpdateEnvironmentInput(current_input, timestamp);
+}
+
+TimeInfo CreateRegularTimeInfo(int seq_len, float time_step, float start_time) {
+    std::vector<float> timestamps;
+    timestamps.reserve(seq_len);
+    
+    for (int i = 0; i < seq_len; ++i) {
+        timestamps.push_back(start_time + i * time_step);
+    }
+    
+    return CreateTimeInfo(timestamps);
 }
 
 std::vector<float> GenerateTimestamps(int seq_len, float dt, float start_time) {
