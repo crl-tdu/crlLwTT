@@ -67,7 +67,7 @@ struct TimeInfo {
      * @param current_input Current environment input vector
      * @param timestamp Current timestamp
      */
-    void UpdateEnvironmentInput(const std::vector<float>& current_input, float timestamp) {
+    void UpdateEnvironmentInput(const std::vector<float>& current_input, [[maybe_unused]] float timestamp) {
         // Add current input to history
         environment_input_history.push_back(current_input);
         

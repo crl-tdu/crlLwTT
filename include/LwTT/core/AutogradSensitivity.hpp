@@ -236,8 +236,8 @@ namespace AutogradUtils {
      * @return Optimized model
      */
     torch::jit::script::Module OptimizeModel(
-        torch::nn::Module& model,
-        const torch::Tensor& sample_input
+        [[maybe_unused]] torch::nn::Module& model,
+        [[maybe_unused]] const torch::Tensor& sample_input
     );
 
 } // namespace AutogradUtils

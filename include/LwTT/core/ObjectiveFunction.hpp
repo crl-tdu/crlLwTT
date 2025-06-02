@@ -80,9 +80,9 @@ public:
      * @param actual_outcome Actual observed outcome
      * @param feedback Feedback signal (reward/cost)
      */
-    virtual void UpdateFromFeedback(const Tensor& predicted_state,
-                                   const Tensor& actual_outcome,
-                                   float feedback) {}
+    virtual void UpdateFromFeedback([[maybe_unused]] const Tensor& predicted_state,
+                                   [[maybe_unused]] const Tensor& actual_outcome,
+                                   [[maybe_unused]] float feedback) {}
 
     /**
      * @brief Get human-readable description of the objective

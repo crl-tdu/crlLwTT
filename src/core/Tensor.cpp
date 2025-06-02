@@ -197,7 +197,7 @@ Tensor Tensor::Slice(int dim, int start, int end) const {
     
     // Copy data
     int batch_size = shape_[0];
-    int seq_len = shape_[1];
+    [[maybe_unused]] int seq_len = shape_[1];
     int feature_dim = shape_[2];
     
     for (int b = 0; b < batch_size; ++b) {

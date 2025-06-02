@@ -65,7 +65,7 @@ Tensor TimeEncoding::Apply(const Tensor& input,
         throw std::invalid_argument("Input must be 3D [batch_size, seq_len, d_model]");
     }
     
-    int batch_size = input_shape[0];
+    [[maybe_unused]] int batch_size = input_shape[0];
     int seq_len = input_shape[1];
     int d_model = input_shape[2];
     

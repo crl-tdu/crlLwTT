@@ -15,15 +15,14 @@ namespace Layers {
 // Forward declarations for internal components
 class TransformerBlock::MultiHeadAttention {
 public:
-    explicit MultiHeadAttention(int d_model, int n_heads, float dropout_rate)
-        : d_model_(d_model), n_heads_(n_heads), dropout_rate_(dropout_rate),
-          d_k_(d_model / n_heads) {
+    explicit MultiHeadAttention(int d_model, int n_heads, [[maybe_unused]] float dropout_rate)
+        : d_model_(d_model), n_heads_(n_heads), d_k_(d_model / n_heads) {
         if (d_model % n_heads != 0) {
             throw std::invalid_argument("d_model must be divisible by n_heads");
         }
     }
     
-    Core::Tensor Forward(const Core::Tensor& input, const Core::Tensor* mask = nullptr) {
+    Core::Tensor Forward(const Core::Tensor& input, [[maybe_unused]] const Core::Tensor* mask = nullptr) {
         // Simplified multi-head attention implementation
         auto input_shape = input.Shape();
         if (input_shape.size() != 3) {
@@ -70,17 +69,16 @@ public:
     }
     
 private:
-    int d_model_;
+    [[maybe_unused]] int d_model_;
     int n_heads_;
-    float dropout_rate_;
-    int d_k_;
+    [[maybe_unused]] int d_k_;
     mutable Core::Tensor attention_weights_;
 };
 
 class TransformerBlock::FeedForward {
 public:
-    explicit FeedForward(int d_model, int d_ff, float dropout_rate)
-        : d_model_(d_model), d_ff_(d_ff), dropout_rate_(dropout_rate) {}
+    explicit FeedForward(int d_model, int d_ff, [[maybe_unused]] float dropout_rate)
+        : d_model_(d_model), d_ff_(d_ff) {}
     
     Core::Tensor Forward(const Core::Tensor& input) {
         // Simplified feed-forward implementation
@@ -105,9 +103,8 @@ public:
     }
     
 private:
-    int d_model_;
-    int d_ff_;
-    float dropout_rate_;
+    [[maybe_unused]] int d_model_;
+    [[maybe_unused]] int d_ff_;
 };
 
 class TransformerBlock::LayerNorm {
@@ -168,7 +165,7 @@ public:
     }
     
 private:
-    int d_model_;
+    [[maybe_unused]] int d_model_;
     float eps_;
 };
 
@@ -190,8 +187,8 @@ TransformerBlock::TransformerBlock(const TransformerBlockConfig& config)
 TransformerBlock::~TransformerBlock() = default;
 
 Core::Tensor TransformerBlock::Forward(const Core::Tensor& input,
-                                      const Core::Tensor* mask,
-                                      const Core::TimeInfo* time_info) {
+                                      [[maybe_unused]] const Core::Tensor* mask,
+                                      [[maybe_unused]] const Core::TimeInfo* time_info) {
     
     if (config_.use_pre_norm) {
         // Pre-normalization: Norm -> Attention -> Residual -> Norm -> FFN -> Residual

@@ -618,7 +618,7 @@ bool Transformer::WriteModelHeader(std::ofstream& file) const {
     // LwTT model file format header
     const char magic[4] = {'L', 'w', 'T', 'T'};
     const uint32_t version = 1;
-    const uint32_t header_size = sizeof(magic) + sizeof(version);
+    [[maybe_unused]] const uint32_t header_size = sizeof(magic) + sizeof(version);
     
     // Write magic number
     file.write(magic, sizeof(magic));
