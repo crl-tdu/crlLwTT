@@ -52,11 +52,34 @@ endif()
 
 # OpenMP
 if(LWTT_ENABLE_OPENMP)
+    # macOS Homebrew OpenMP handling
+    if(APPLE)
+        find_program(BREW_COMMAND brew)
+        if(BREW_COMMAND)
+            execute_process(
+                COMMAND ${BREW_COMMAND} --prefix libomp
+                OUTPUT_VARIABLE LIBOMP_PREFIX
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+                ERROR_QUIET
+            )
+            if(LIBOMP_PREFIX AND EXISTS "${LIBOMP_PREFIX}")
+                set(OpenMP_ROOT "${LIBOMP_PREFIX}")
+                message(STATUS "Setting OpenMP_ROOT to: ${OpenMP_ROOT}")
+            endif()
+        endif()
+    endif()
+    
     find_package(OpenMP QUIET)
     if(OpenMP_CXX_FOUND)
         message(STATUS "Found OpenMP: ${OpenMP_CXX_VERSION}")
+        message(STATUS "OpenMP flags: ${OpenMP_CXX_FLAGS}")
+        message(STATUS "OpenMP libraries: ${OpenMP_CXX_LIBRARIES}")
     else()
         message(STATUS "OpenMP not found")
+        if(APPLE)
+            message(STATUS "On macOS, you may need to install libomp:")
+            message(STATUS "  brew install libomp")
+        endif()
         set(LWTT_ENABLE_OPENMP OFF CACHE BOOL "Enable OpenMP" FORCE)
     endif()
 endif()

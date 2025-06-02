@@ -20,6 +20,9 @@
 #define LWTT_VERSION_PATCH 0
 #define LWTT_VERSION_STRING "1.0.0"
 
+// Platform detection and utilities
+// #include "LwTT/Platform.hpp"  // Temporarily disabled
+
 // Core components
 #include "LwTT/core/Tensor.hpp"
 #include "LwTT/core/Transformer.hpp"

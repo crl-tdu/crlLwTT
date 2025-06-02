@@ -13,8 +13,12 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Include custom CMake modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include(PlatformDetection)
 include(CompilerOptions)
 include(Dependencies)
+
+# Set up platform detection first (before any other configuration)
+lwtt_setup_platform_detection()
 
 # Build options
 option(LWTT_ENABLE_SIMD "Enable SIMD optimizations" ON)
