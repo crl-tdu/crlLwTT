@@ -110,29 +110,29 @@ if(LWTT_BUILD_BENCHMARKS)
     FetchContent_MakeAvailable(googlebenchmark)
 endif()
 
-# pybind11 (for Python bindings)
-if(LWTT_BUILD_PYTHON_BINDINGS)
-    find_package(Python COMPONENTS Interpreter Development QUIET)
-    if(Python_FOUND)
-        FetchContent_Declare(
-            pybind11
-            GIT_REPOSITORY https://github.com/pybind/pybind11.git
-            GIT_TAG v2.11.1
-            GIT_SHALLOW TRUE
-        )
-        FetchContent_MakeAvailable(pybind11)
-    else()
-        message(WARNING "Python not found, Python bindings will be disabled")
-        set(LWTT_BUILD_PYTHON_BINDINGS OFF CACHE BOOL "Build Python bindings" FORCE)
-    endif()
-endif()
+# pybind11 (for Python bindings) - 現在無効化
+# if(LWTT_BUILD_PYTHON_BINDINGS)
+#     find_package(Python COMPONENTS Interpreter Development QUIET)
+#     if(Python_FOUND)
+#         FetchContent_Declare(
+#             pybind11
+#             GIT_REPOSITORY https://github.com/pybind/pybind11.git
+#             GIT_TAG v2.11.1
+#             GIT_SHALLOW TRUE
+#         )
+#         FetchContent_MakeAvailable(pybind11)
+#     else()
+#         message(WARNING "Python not found, Python bindings will be disabled")
+#         set(LWTT_BUILD_PYTHON_BINDINGS OFF CACHE BOOL "Build Python bindings" FORCE)
+#     endif()
+# endif()
 
-# Doxygen (for documentation)
-if(LWTT_BUILD_DOCS)
-    find_package(Doxygen QUIET)
-    if(NOT DOXYGEN_FOUND)
-        message(STATUS "Doxygen not found, documentation will not be built")
-        set(LWTT_BUILD_DOCS OFF CACHE BOOL "Build documentation" FORCE)
-    endif()
-endif()
+# Doxygen (for documentation) - 現在無効化
+# if(LWTT_BUILD_DOCS)
+#     find_package(Doxygen QUIET)
+#     if(NOT DOXYGEN_FOUND)
+#         message(STATUS "Doxygen not found, documentation will not be built")
+#         set(LWTT_BUILD_DOCS OFF CACHE BOOL "Build documentation" FORCE)
+#     endif()
+# endif()
 

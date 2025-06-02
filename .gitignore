@@ -1,51 +1,532 @@
-# Build directories
+# ==========================================
+# crlLwTT - Optimized .gitignore
+# ==========================================
+
+# ==========================================
+# Build Directories & Artifacts
+# ==========================================
+
+# Standard build directories
+build/
+build_*/
 debug/
 release/
-build/
+dist/
+out/
+
+# CMake build directories
+cmake-build-*/
+CMakeBuild*/
+_build/
+
+# Platform-specific build directories
+x64/
+x86/
+Win32/
+Debug/
+Release/
+RelWithDebInfo/
+MinSizeRel/
+
+# Generated binaries and libraries
+*.exe
+*.dll
+*.so
+*.so.*
+*.dylib
+*.a
+*.lib
+*.exp
+*.pdb
+*.ilk
+
+# ==========================================
+# CMake Generated Files
+# ==========================================
+
+# CMake cache and configuration
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile.cmake
+_deps/
+
+# Generated Makefiles and project files
+Makefile
+*.make
+*.vcxproj*
+*.sln
+*.suo
+*.user
+
+# Generated CMake exports and configs
+*Config.cmake
+*ConfigVersion.cmake
+*Targets*.cmake
+
+# CMake temporary files
+CMakeTmp/
+CMakeError.log
+CMakeOutput.log
+
+# ==========================================
+# Object Files & Intermediates
+# ==========================================
+
+# Compiled object files
+*.o
+*.obj
+*.lo
+*.la
+*.al
+*.so
+*.a
+*.lib
+*.dylib
+
+# Precompiled headers
+*.gch
+*.pch
+
+# Compiled dynamic libraries
+*.dll
+*.so
+*.dylib
+
+# Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# ==========================================
+# Development Environment Files
+# ==========================================
+
+# JetBrains IDEs (CLion, IntelliJ IDEA, etc.)
+.idea/
+*.iws
+*.iml
+*.ipr
 cmake-build-*/
 
-# IDE files
-.idea/
+# Visual Studio Code
 .vscode/
+*.code-workspace
+
+# Visual Studio
+.vs/
+*.vcxproj.user
+*.vcxproj.filters
+*.VC.db
+*.VC.VC.opendb
+
+# Vim/Neovim
 *.swp
 *.swo
 *~
+.netrwhist
+*.un~
 
-# Temporary files
-tmp/
-temp/
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Eclipse CDT
+.metadata
+.buildpath
+.cproject
+.project
+.settings/
+
+# Xcode
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.moved-aside
+*.xccheckout
+*.xcscmblueprint
+DerivedData/
+*.xcworkspace/
+!default.xcworkspace/
+
+# ==========================================
+# Operating System Files
+# ==========================================
 
 # macOS
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 .AppleDouble
 .LSOverride
+Icon
+.DocumentRevisions-V100
+.fseventsd
+.TemporaryItems
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
 
-# Compiled Object files
-*.o
-*.obj
-*.so
-*.dylib
-*.a
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
 
-# CMake
-CMakeCache.txt
-CMakeFiles/
-cmake_install.cmake
-Makefile
-*.cmake
+# Linux
+*~
+.directory
+.Trash-*
 
-# Test outputs
-Testing/
+# ==========================================
+# Language-Specific Files
+# ==========================================
 
-# Python
+# Python (for potential bindings)
 __pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+*.egg
+MANIFEST
+
+# JavaScript/Node.js (for potential web documentation)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+.npm
+.eslintcache
+
+# ==========================================
+# Documentation & Generated Content
+# ==========================================
+
+# Doxygen generated documentation
+docs/_build/
+docs/html/
+docs/xml/
+docs/latex/
+docs/man/
+docs/rtf/
+Doxyfile.bak
+doxygen_sqlite3.db
+
+# Sphinx documentation
+docs/_build/
+docs/_static/
+docs/_templates/
+
+# GitBook
+_book/
+
+# ==========================================
+# Testing & Coverage
+# ==========================================
+
+# Test outputs and results
+Testing/
+test_results/
+test_output/
+CTestCustom.cmake
+
+# Google Test
+gtest/
+gmock/
+
+# Coverage reports
+*.gcno
+*.gcda
+*.gcov
+coverage.info
+coverage.xml
+htmlcov/
+.coverage
+.coverage.*
+lcov.info
+*.profdata
+*.profraw
+
+# Profiling data
+callgrind.out.*
+cachegrind.out.*
+massif.out.*
+perf.data*
+gmon.out
+profile.txt
+
+# Valgrind
+*.memcheck
+*.helgrind
+*.drd
+
+# ==========================================
+# Dependencies & External Libraries
+# ==========================================
+
+# External dependencies
+third_party/
+vendor/
+external/
+libs/
+dependencies/
+
+# Conan
+conanbuildinfo.*
+conaninfo.txt
+conandata.yml
+.conan/
+
+# vcpkg
+vcpkg_installed/
+.vcpkg-root
+
+# LibTorch installation
+libtorch/
+torch/
+pytorch/
+
+# Eigen (if downloaded)
+eigen/
+eigen3/
+
+# OpenMP
+openmp/
+
+# ==========================================
+# Temporary & Cache Files
+# ==========================================
+
+# General temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+*.orig
+
+# Log files
+*.log
+*.log.*
+log/
+logs/
+
+# Cache directories
+.cache/
+cache/
+
+# Compiled Python files
 *.pyc
 *.pyo
 *.pyd
-.Python
 
-# LibTorch
-libtorch/
+# ==========================================
+# LwTT Specific Files
+# ==========================================
 
-# Logs
-*.log
+# Generated code
+*_generated.hpp
+*_generated.cpp
+*_generated.h
+*_generated.c
+*.generated.*
+
+# Build artifacts specific to LwTT
+examples/build/
+tests/build/
+benchmarks/build/
+
+# Experimental and temporary directories
+experiments/
+scratch/
+playground/
+
+# Model files and datasets (if large)
+*.model
+*.weights
+*.checkpoint
+*.ckpt
+*.bin
+data/
+datasets/
+
+# Configuration overrides
+local_config.cmake
+user_config.cmake
+*_local.cmake
+
+# Benchmark results
+benchmark_results/
+*.benchmark
+perf_results/
+
+# FetchContent downloads (CMake dependency management)
+_deps/
+*-subbuild/
+*-build/
+*-src/
+
+# Test integration files
+test_submodule_integration/
+integration_test_*/
+
+# Platform-specific object files (additional)
+*.dSYM/
+*.su
+*.idb
+
+# Temporary build scripts
+build.sh.tmp
+configure.tmp
+
+# ==========================================
+# Package Managers & Containers
+# ==========================================
+
+# Docker
+.dockerignore
+Dockerfile.build
+
+# Flatpak
+.flatpak-builder/
+
+# Snap
+parts/
+prime/
+stage/
+*.snap
+
+# ==========================================
+# Version Control & Backup
+# ==========================================
+
+# Git specific
+.git/
+.gitattributes.bak
+
+# Backup files from various editors
+*~
+*.bak
+*.backup
+*.swp
+*.tmp
+
+# Patch files
+*.patch
+*.diff
+*.rej
+*.orig
+
+# ==========================================
+# Archive & Compressed Files
+# ==========================================
+
+# Compressed files
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+*.bz2
+*.xz
+
+# ==========================================
+# System & Runtime Files
+# ==========================================
+
+# Core dumps
+core
+core.*
+vgcore.*
+
+# Crash dumps
+*.dmp
+*.crash
+
+# Lock files
+*.lock
+.lock
+
+# PID files
+*.pid
+
+# ==========================================
+# Custom Exclusions
+# ==========================================
+
+# Add project-specific exclusions here
+# Example:
+# my_local_experiments/
+# custom_builds/
+
+# ==========================================
+# Force Include Important Files
+# ==========================================
+
+# Always include these important files even if they match patterns above
+!CMakeLists.txt
+!*.cmake.in
+!.gitignore
+!.gitattributes
+!README.md
+!LICENSE
+!CHANGELOG.md
+!VERSION

@@ -1,5 +1,12 @@
 cmake_minimum_required(VERSION 3.16)
 
+# プロジェクトがトップレベルかチェック
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    set(LWTT_MAIN_PROJECT TRUE)
+else()
+    set(LWTT_MAIN_PROJECT FALSE)
+endif()
+
 project(crlLwTT
     VERSION 1.0.0
     DESCRIPTION "Lightweight Time-aware Transformer Library"
@@ -11,26 +18,39 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Include custom CMake modules
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-include(PlatformDetection)
-include(CompilerOptions)
-include(Dependencies)
-
-# Set up platform detection first (before any other configuration)
+# Include custom CMake modules (メインプロジェクトでのみ実行)
+if(LWTT_MAIN_PROJECT)
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+    include(PlatformDetection)
+    include(CompilerOptions)
+    include(Dependencies)
+    
+    # Set up platform detection first (before any other configuration)
 lwtt_setup_platform_detection()
+else()
+    # submodule使用時は簡略化された依存関係検索
+    find_package(Torch QUIET)
+    if(Torch_FOUND)
+        set(LWTT_HAS_TORCH TRUE)
+    endif()
+    
+    find_package(Eigen3 QUIET)
+    find_package(OpenMP QUIET)
+endif()
 
-# Build options
+# ビルドオプション（submoduleの場合はデフォルト調整）
 option(LWTT_ENABLE_SIMD "Enable SIMD optimizations" ON)
 option(LWTT_ENABLE_OPENMP "Enable OpenMP" ON)
 option(LWTT_ENABLE_PROFILING "Enable profiling" OFF)
 option(LWTT_ENABLE_QUANTIZATION "Enable quantization support" ON)
 option(LWTT_USE_EIGEN "Use Eigen for linear algebra" ON)
-option(LWTT_BUILD_SHARED "Build shared library" ON)
+option(LWTT_BUILD_SHARED "Build shared library" ${LWTT_MAIN_PROJECT})
 option(LWTT_BUILD_STATIC "Build static library" ON)
 option(LWTT_ENABLE_COVERAGE "Enable code coverage" OFF)
-option(LWTT_BUILD_DOCS "Build documentation" OFF)
-option(LWTT_BUILD_PYTHON_BINDINGS "Build Python bindings" OFF)
+option(LWTT_BUILD_DOCS "Build documentation" OFF)  # 無効化 - docsディレクトリ構造が不完全
+option(LWTT_BUILD_PYTHON_BINDINGS "Build Python bindings" OFF)  # 無効化 - bindingsディレクトリが存在しない
+option(LWTT_BUILD_TESTS "Build tests, examples, and benchmarks" ${LWTT_MAIN_PROJECT})
+option(LWTT_INSTALL "Install LwTT" ${LWTT_MAIN_PROJECT})
 
 # Source files - using automatic file discovery
 file(GLOB_RECURSE LWTT_SOURCES 
@@ -51,115 +71,122 @@ file(GLOB_RECURSE LWTT_HEADERS
     "include/LwTT/*.hpp"
 )
 
+# ==========================================
+# INTERFACEライブラリターゲット（常に作成）
+# ==========================================
+
+add_library(LwTT_headers INTERFACE)
+target_include_directories(LwTT_headers INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+
+# 依存関係をINTERFACEライブラリに設定
+if(LWTT_HAS_TORCH AND Torch_FOUND)
+    target_include_directories(LwTT_headers INTERFACE ${TORCH_INCLUDE_DIRS})
+    target_link_libraries(LwTT_headers INTERFACE ${TORCH_LIBRARIES})
+    target_compile_definitions(LwTT_headers INTERFACE LWTT_HAS_TORCH)
+endif()
+
+if(LWTT_USE_EIGEN AND (Eigen3_FOUND OR TARGET Eigen3::Eigen))
+    target_link_libraries(LwTT_headers INTERFACE Eigen3::Eigen)
+endif()
+
+if(LWTT_ENABLE_OPENMP AND OpenMP_CXX_FOUND)
+    target_link_libraries(LwTT_headers INTERFACE OpenMP::OpenMP_CXX)
+endif()
+
+target_compile_features(LwTT_headers INTERFACE cxx_std_23)
+
 # Build shared library
 if(LWTT_BUILD_SHARED)
     add_library(LwTT_shared SHARED ${LWTT_SOURCES} ${LWTT_HEADERS})
+    target_link_libraries(LwTT_shared PUBLIC LwTT_headers)
     set_target_properties(LwTT_shared PROPERTIES
         OUTPUT_NAME LwTT
         VERSION ${PROJECT_VERSION}
         SOVERSION ${PROJECT_VERSION_MAJOR}
+        POSITION_INDEPENDENT_CODE ON
     )
 
-    # Set RPATH for shared library
-    if(APPLE)
-        set_target_properties(LwTT_shared PROPERTIES
-            INSTALL_RPATH "@loader_path;@loader_path/../lib;${LIBTORCH_LIB_DIR};$ENV{HOME}/local/lib"
-            BUILD_RPATH "${CMAKE_BINARY_DIR};${LIBTORCH_LIB_DIR};$ENV{HOME}/local/lib"
-        )
-    elseif(UNIX AND NOT APPLE)
-        set_target_properties(LwTT_shared PROPERTIES
-            INSTALL_RPATH "$ORIGIN:$ORIGIN/../lib:${LIBTORCH_LIB_DIR}:$ENV{HOME}/local/lib"
-            BUILD_RPATH "${CMAKE_BINARY_DIR}:${LIBTORCH_LIB_DIR}:$ENV{HOME}/local/lib"
-        )
+    # Set RPATH for shared library (メインプロジェクトのみ)
+    if(LWTT_MAIN_PROJECT)
+        if(APPLE)
+            set_target_properties(LwTT_shared PROPERTIES
+                INSTALL_RPATH "@loader_path;@loader_path/../lib;${LIBTORCH_LIB_DIR};$ENV{HOME}/local/lib"
+                BUILD_RPATH "${CMAKE_BINARY_DIR};${LIBTORCH_LIB_DIR};$ENV{HOME}/local/lib"
+            )
+        elseif(UNIX AND NOT APPLE)
+            set_target_properties(LwTT_shared PROPERTIES
+                INSTALL_RPATH "$ORIGIN:$ORIGIN/../lib:${LIBTORCH_LIB_DIR}:$ENV{HOME}/local/lib"
+                BUILD_RPATH "${CMAKE_BINARY_DIR}:${LIBTORCH_LIB_DIR}:$ENV{HOME}/local/lib"
+            )
+        endif()
     endif()
-
-    target_include_directories(LwTT_shared PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
-    )
-
-    # Add dependencies
-    if(LWTT_HAS_TORCH AND Torch_FOUND)
-        target_include_directories(LwTT_shared PUBLIC ${TORCH_INCLUDE_DIRS})
-        target_link_libraries(LwTT_shared PUBLIC ${TORCH_LIBRARIES})
-        target_compile_definitions(LwTT_shared PUBLIC LWTT_HAS_TORCH)
-    endif()
-
-    if(LWTT_USE_EIGEN AND (Eigen3_FOUND OR TARGET Eigen3::Eigen))
-        target_link_libraries(LwTT_shared PUBLIC Eigen3::Eigen)
-    endif()
-
-    if(LWTT_ENABLE_OPENMP AND OpenMP_CXX_FOUND)
-        target_link_libraries(LwTT_shared PUBLIC OpenMP::OpenMP_CXX)
+    
+    if(LWTT_MAIN_PROJECT)
+        message(STATUS "✓ Shared library target: LwTT_shared")
     endif()
 endif()
 
-# Build static library
+# Build static library (推奨、submoduleでデフォルト)
 if(LWTT_BUILD_STATIC)
     add_library(LwTT_static STATIC ${LWTT_SOURCES} ${LWTT_HEADERS})
+    target_link_libraries(LwTT_static PUBLIC LwTT_headers)
     set_target_properties(LwTT_static PROPERTIES
-        OUTPUT_NAME LwTT_static
+        OUTPUT_NAME LwTT
         VERSION ${PROJECT_VERSION}
+        POSITION_INDEPENDENT_CODE ON
     )
-
-    target_include_directories(LwTT_static PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
-    )
-
-    # Add dependencies
-    if(LWTT_HAS_TORCH AND Torch_FOUND)
-        target_include_directories(LwTT_static PUBLIC ${TORCH_INCLUDE_DIRS})
-        target_link_libraries(LwTT_static PUBLIC ${TORCH_LIBRARIES})
-        target_compile_definitions(LwTT_static PUBLIC LWTT_HAS_TORCH)
+    
+    # メインターゲットエイリアス
+    if(NOT TARGET LwTT)
+        add_library(LwTT ALIAS LwTT_static)
     endif()
-
-    if(LWTT_USE_EIGEN AND (Eigen3_FOUND OR TARGET Eigen3::Eigen))
-        target_link_libraries(LwTT_static PUBLIC Eigen3::Eigen)
-    endif()
-
-    if(LWTT_ENABLE_OPENMP AND OpenMP_CXX_FOUND)
-        target_link_libraries(LwTT_static PUBLIC OpenMP::OpenMP_CXX)
+    
+    if(LWTT_MAIN_PROJECT)
+        message(STATUS "✓ Static library target: LwTT_static")
     endif()
 endif()
 
-# Create alias for easier usage
-if(LWTT_BUILD_SHARED)
-    add_library(LwTT::LwTT ALIAS LwTT_shared)
-elseif(LWTT_BUILD_STATIC)
-    add_library(LwTT::LwTT ALIAS LwTT_static)
+# Modern CMake エイリアス
+if(LWTT_BUILD_SHARED AND NOT TARGET LwTT)
+    add_library(LwTT ALIAS LwTT_shared)
 endif()
 
-# Python bindings
-if(LWTT_BUILD_PYTHON_BINDINGS)
-    add_subdirectory(bindings)
-endif()
+# Python bindings (現在無効化 - bindingsディレクトリが存在しない)
+# if(LWTT_BUILD_PYTHON_BINDINGS AND LWTT_MAIN_PROJECT)
+#     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/bindings")
+#         add_subdirectory(bindings)
+#     else()
+#         message(STATUS "Bindings directory not found, skipping Python bindings")
+#     endif()
+# endif()
 
-# Build documentation
-if(LWTT_BUILD_DOCS)
-    find_package(Doxygen)
-    if(DOXYGEN_FOUND)
-        set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/docs)
-        set(DOXYGEN_GENERATE_HTML YES)
-        set(DOXYGEN_GENERATE_XML YES)
-        
-        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile.in
-                      ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
-        
-        add_custom_target(docs
-            COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-            COMMENT "Generating API documentation with Doxygen"
-            VERBATIM)
-    else()
-        message(WARNING "Doxygen not found, documentation will not be built")
-    endif()
-endif()
+# Build documentation (現在無効化 - docsの自動生成を無効)
+# if(LWTT_BUILD_DOCS AND LWTT_MAIN_PROJECT)
+#     find_package(Doxygen)
+#     if(DOXYGEN_FOUND)
+#         set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/docs)
+#         set(DOXYGEN_GENERATE_HTML YES)
+#         set(DOXYGEN_GENERATE_XML YES)
+#         
+#         configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile.in
+#                       ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+#         
+#         add_custom_target(docs
+#             COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+#             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+#             COMMENT "Generating API documentation with Doxygen"
+#             VERBATIM)
+#     else()
+#         message(WARNING "Doxygen not found, documentation will not be built")
+#     endif()
+# endif()
 
 # Build tests
 # Tests (includes examples and benchmarks)
-option(LWTT_BUILD_TESTS "Build tests, examples, and benchmarks" ON)
-if(LWTT_BUILD_TESTS)
+if(LWTT_BUILD_TESTS AND LWTT_MAIN_PROJECT)
     enable_testing()
     
     # Find all .cpp files in tests directory
@@ -213,7 +240,14 @@ if(LWTT_BUILD_TESTS)
     endif()
 endif()
 
-# Install targets
+# Install targets (条件付き)
+if(LWTT_INSTALL)
+
+# Install headers interface target first
+install(TARGETS LwTT_headers
+    EXPORT LwTTTargets
+)
+
 if(LWTT_BUILD_SHARED)
     install(TARGETS LwTT_shared
         EXPORT LwTTTargets
@@ -265,6 +299,8 @@ install(FILES
     "${CMAKE_CURRENT_BINARY_DIR}/LwTTConfigVersion.cmake"
     DESTINATION lib/cmake/LwTT
 )
+
+endif() # LWTT_INSTALL
 
 # Package configuration
 set(CPACK_PACKAGE_NAME "LwTT")
