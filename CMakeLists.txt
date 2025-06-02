@@ -7,7 +7,7 @@ project(crlLwTT
 )
 
 # Set C++ standard
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -157,7 +157,51 @@ endif()
 option(LWTT_BUILD_TESTS "Build tests, examples, and benchmarks" ON)
 if(LWTT_BUILD_TESTS)
     enable_testing()
-    add_subdirectory(tests)
+    
+    # Find all .cpp files in tests directory
+    file(GLOB TEST_SOURCES "tests/*.cpp")
+    
+    # Create executable for each test file
+    foreach(TEST_SOURCE ${TEST_SOURCES})
+        # Get filename without extension
+        get_filename_component(TEST_NAME ${TEST_SOURCE} NAME_WE)
+        
+        # Create executable
+        add_executable(${TEST_NAME} ${TEST_SOURCE})
+        
+        # Link with LwTT library
+        if(LWTT_BUILD_SHARED AND TARGET LwTT_shared)
+            target_link_libraries(${TEST_NAME} PRIVATE LwTT_shared)
+        elseif(LWTT_BUILD_STATIC AND TARGET LwTT_static)
+            target_link_libraries(${TEST_NAME} PRIVATE LwTT_static)
+        endif()
+        
+        # Include directories
+        target_include_directories(${TEST_NAME} PRIVATE
+            ${CMAKE_CURRENT_SOURCE_DIR}/include
+        )
+        
+        # Add compiler definitions if needed
+        if(LWTT_HAS_TORCH AND Torch_FOUND)
+            target_compile_definitions(${TEST_NAME} PRIVATE LWTT_HAS_TORCH)
+        endif()
+        
+        # Add test to CTest
+        add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
+        
+        # Set test properties
+        set_tests_properties(${TEST_NAME} PROPERTIES
+            TIMEOUT 300
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        )
+        
+        message(STATUS "Added test executable: ${TEST_NAME}")
+    endforeach()
+    
+    # Also add subdirectory if it exists (for compatibility with existing structure)
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/CMakeLists.txt")
+        add_subdirectory(tests)
+    endif()
 endif()
 
 # Install targets
