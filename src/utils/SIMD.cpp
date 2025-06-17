@@ -206,11 +206,11 @@ void SIMDUtils::MatrixMultiply(const float* a, const float* b, float* c,
                               bool transpose_a, bool transpose_b) {
     // Simple implementation - can be further optimized with blocking and register tiling
     if (!transpose_a && !transpose_b) {
-        // C = A * B, A: m×k, B: k×n, C: m×n
+        // C = A * B, A: mÃ—k, B: kÃ—n, C: mÃ—n
         for (int i = 0; i < m; ++i) {
             for (int j = 0; j < n; ++j) {
                 float sum = 0.0f;
-                int vec_end = (k / SIMD_WIDTH) * SIMD_WIDTH;
+                [[maybe_unused]] int vec_end = (k / SIMD_WIDTH) * SIMD_WIDTH;
                 int l = 0;
                 
                 // Vectorized dot product

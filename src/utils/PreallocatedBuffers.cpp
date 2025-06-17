@@ -34,8 +34,10 @@ Core::Tensor TensorPool::GetTensor(const std::vector<int>& shape) {
         Core::Tensor tensor = std::move(available_tensors_.front());
         available_tensors_.pop();
         
-        // Resize tensor to required shape
-        tensor.Resize(shape);
+        // Create new tensor with required shape if different
+        if (tensor.GetShape() != shape) {
+            tensor = Core::Tensor(shape);
+        }
         
         // Update peak usage
         size_t current_usage = config_.tensor_pool_size - available_tensors_.size();
@@ -58,7 +60,7 @@ void TensorPool::ReturnTensor(Core::Tensor&& tensor) {
     // Only return to pool if we haven't exceeded capacity
     if (available_tensors_.size() < config_.tensor_pool_size) {
         // Clear tensor data but keep memory allocated
-        tensor.Zero();
+        tensor.Fill(0.0f);
         available_tensors_.emplace(std::move(tensor));
     }
     // If pool is full, tensor will be destroyed automatically
@@ -118,8 +120,10 @@ Core::Tensor PreallocatedBuffers::GetWorkTensor(const std::vector<int>& shape) {
         // Find compatible pre-allocated tensor
         for (auto& tensor : preallocated_work_tensors_) {
             if (IsShapeCompatible(tensor.GetShape(), shape)) {
-                // Resize if needed and return
-                tensor.Resize(shape);
+                // Create new tensor with required shape if needed
+                if (tensor.GetShape() != shape) {
+                    tensor = Core::Tensor(shape);
+                }
                 return std::move(tensor);
             }
         }
@@ -153,7 +157,9 @@ Core::Tensor PreallocatedBuffers::GetAttentionBuffer(int seq_len, int num_heads)
         
         for (auto& buffer : preallocated_attention_buffers_) {
             if (IsShapeCompatible(buffer.GetShape(), shape)) {
-                buffer.Resize(shape);
+                if (buffer.GetShape() != shape) {
+                    buffer = Core::Tensor(shape);
+                }
                 return std::move(buffer);
             }
         }
