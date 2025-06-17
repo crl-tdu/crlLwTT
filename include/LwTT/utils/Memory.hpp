@@ -12,6 +12,8 @@
 #include <vector>
 #include <cstddef>
 #include <mutex>
+#include <map>
+#include <unordered_map>
 
 namespace crllwtt {
 namespace Utils {
@@ -67,12 +69,13 @@ private:
     size_t pool_size_;
     size_t used_memory_;
     std::vector<char> pool_buffer_;
-    std::vector<std::pair<void*, size_t>> free_blocks_;
+    std::map<void*, size_t> free_blocks_;
+    std::unordered_map<void*, size_t> allocated_blocks_;
     mutable std::mutex mutex_;
     
     // Internal methods
     void* AllocateFromPool(size_t size, size_t alignment);
-    void MergeAdjacentBlocks();
+    void MergeAdjacentFreeBlocks();
 };
 
 /**

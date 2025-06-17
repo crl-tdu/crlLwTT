@@ -22,7 +22,7 @@ MemoryPool::MemoryPool(size_t pool_size_mb)
     pool_buffer_.resize(pool_size_);
     
     // Initialize with one large free block
-    free_blocks_.emplace_back(pool_buffer_.data(), pool_size_);
+    free_blocks_[pool_buffer_.data()] = pool_size_;
 }
 
 MemoryPool::~MemoryPool() {
@@ -45,14 +45,16 @@ void* MemoryPool::Allocate(size_t size, size_t alignment) {
                 void* new_free_ptr = static_cast<char*>(ptr) + aligned_size;
                 size_t new_free_size = it->second - aligned_size;
                 
-                // Update the current block or create a new one
-                it->first = new_free_ptr;
-                it->second = new_free_size;
+                // Remove current block and add new smaller block
+                free_blocks_.erase(it);
+                free_blocks_[new_free_ptr] = new_free_size;
             } else {
                 // Remove the block entirely
                 free_blocks_.erase(it);
             }
             
+            // Track the allocation
+            allocated_blocks_[ptr] = aligned_size;
             used_memory_ += aligned_size;
             return ptr;
         }
@@ -67,13 +69,21 @@ void MemoryPool::Deallocate(void* ptr) {
     
     if (!ptr) return;
     
-    // For simplicity, we don't track individual allocation sizes
-    // In a real implementation, we would need to store allocation metadata
-    // For now, just add it back as a free block with arbitrary size
-    // This is a simplified implementation
+    // Find the allocation in our tracking map
+    auto it = allocated_blocks_.find(ptr);
+    if (it == allocated_blocks_.end()) {
+        return; // Pointer not found, silently ignore
+    }
     
-    // Note: This is not a complete implementation
-    // A production memory pool would need to track allocation sizes
+    size_t block_size = it->second;
+    allocated_blocks_.erase(it);
+    
+    // Add the block back to free list
+    free_blocks_[ptr] = block_size;
+    used_memory_ -= block_size;
+    
+    // Try to merge with adjacent free blocks
+    MergeAdjacentFreeBlocks();
 }
 
 void MemoryPool::Reset() {
@@ -81,8 +91,40 @@ void MemoryPool::Reset() {
     
     // Reset all memory as one large free block
     free_blocks_.clear();
-    free_blocks_.emplace_back(pool_buffer_.data(), pool_size_);
+    allocated_blocks_.clear();
+    free_blocks_[pool_buffer_.data()] = pool_size_;
     used_memory_ = 0;
+}
+
+void MemoryPool::MergeAdjacentFreeBlocks() {
+    if (free_blocks_.size() <= 1) return;
+    
+    // Sort free blocks by address
+    std::vector<std::pair<void*, size_t>> sorted_blocks(free_blocks_.begin(), free_blocks_.end());
+    std::sort(sorted_blocks.begin(), sorted_blocks.end());
+    
+    free_blocks_.clear();
+    
+    // Merge adjacent blocks
+    auto current = sorted_blocks.begin();
+    for (auto next = current + 1; next != sorted_blocks.end(); ++next) {
+        char* current_end = static_cast<char*>(current->first) + current->second;
+        char* next_start = static_cast<char*>(next->first);
+        
+        if (current_end == next_start) {
+            // Merge blocks
+            current->second += next->second;
+        } else {
+            // Add current block to the map and move to next
+            free_blocks_[current->first] = current->second;
+            current = next;
+        }
+    }
+    
+    // Add the last block
+    if (current != sorted_blocks.end()) {
+        free_blocks_[current->first] = current->second;
+    }
 }
 
 // AlignedAllocator implementation

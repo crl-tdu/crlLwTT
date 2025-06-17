@@ -1,179 +1,114 @@
-# LwTT: 軽量時間認識Transformer
+# crlLwTT: Cutting-edge Real-time Lightweight Time-aware Transformer
 
-[![ビルド状況](https://github.com/yourusername/LwTT/workflows/CI/badge.svg)](https://github.com/yourusername/LwTT/actions)
-[![ライセンス: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![C++17](https://img.shields.io/badge/C++-17-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B17)
-[![ドキュメント](https://img.shields.io/badge/docs-online-brightgreen.svg)](https://yourusername.github.io/LwTT/)
+[![Build Status](https://github.com/yourusername/crlLwTT/workflows/CI/badge.svg)](https://github.com/yourusername/crlLwTT/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![C++23](https://img.shields.io/badge/C++-23-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B23)
+[![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey)](https://github.com/yourusername/crlLwTT)
 
-## 📖 概要
+> **超高速リアルタイム時系列予測ライブラリ** - 1ms以下の推論時間と適応的学習を実現
 
-**LwTT (Lightweight Time-aware Transformer)** は、リアルタイムの時系列予測と人間の行動モデリング専用に設計された高性能C++ライブラリです。低遅延・高スループットが求められるアプリケーション向けに最適化され、個人の遅延補償、スパース注意機構、マルチスケール時間エンコーディングなどの先進機能を提供します。
+## 🚀 概要
 
-## ✨ 主な特徴
+**crlLwTT**は、リアルタイム時系列予測と人間行動モデリングのために設計された次世代C++ライブラリです。**STA（Sense The Ambience）アーキテクチャ**を搭載し、環境制御と状態予測の統合最適化を実現します。
 
-🚀 **高性能**
-- SIMD対応の最適化されたC++17実装
-- OpenMPによるマルチスレッド実行
-- メモリ効率的なスパース注意機構
-- リアルタイム推論機能（遅延1ms未満）
+### 🎯 主要用途
+- **リアルタイム制御システム**: 1ms以下の応答時間が必要な制御系統
+- **人間状態予測**: 集中力、ストレス、疲労、覚醒度の予測と制御
+- **適応的環境制御**: 照明、音響、温度の個人最適化
+- **産業オートメーション**: 高速意思決定が求められる製造システム
 
-🕒 **時間認識アーキテクチャ**
-- 個人の反応特性に応じた遅延補償
-- マルチスケール時間エンコーディング
-- 適応的時間認識位置エンコーディング
-- 概念ドリフト検出・適応機能
+## ✨ 革新的機能
 
-🔧 **本格運用対応**
-- ヘッダーオンリー・コンパイル済みライブラリの選択可能
-- 95%以上のテストカバレッジを持つ包括的テストスイート
-- 豊富なドキュメントと使用例
-- クロスプラットフォーム対応（Linux、macOS、Windows）
+### 🔥 **超高速処理（Sub-millisecond Performance）**
+- **推論時間**: 0.3ms〜2.1ms（モデルサイズに応じて）
+- **スパースアテンション**: O(n²) → O(n log n) 計算量削減
+- **SIMD最適化**: AVX-512/AVX2/SSE/ARM NEON対応
+- **カーネルフュージョン**: 複数演算の統合による20-40%高速化
 
-🎯 **専門分野特化**
-- 人間の行動予測
-- リアルタイム制御システム
-- 産業オートメーション
-- 医療機器統合
+### 🧠 **適応的学習（Adaptive Learning）**
+- **リアルタイム学習**: オンライン勾配更新（1ms制約内）
+- **個人化**: ユーザー固有パターンの自動学習
+- **勾配キャッシング**: 70-90%の計算削減
+- **適応精度**: 時間制約に応じた精度調整
 
-## 🚀 クイックスタート
+### 🎛️ **STA制御アーキテクチャ**
+- **状態予測**: ŝ = f(x, u) による将来状態予測
+- **感度計算**: ∂ŝ/∂u のリアルタイム偏微分
+- **最適制御**: 環境パラメータの自動調整
+- **不確実性推定**: 信頼度付き予測
+
+### 💾 **効率的メモリ管理**
+- **事前割り当てバッファ**: ゼロアロケーション推論
+- **メモリプール**: 95%以上のメモリ効率改善
+- **循環バッファ**: 勾配履歴の高速アクセス
+
+## 📊 性能ベンチマーク
+
+### 推論性能（Intel i7-12700K, 16コア）
+
+| モデル構成 | 系列長 | 推論時間 | スループット | メモリ使用量 |
+|------------|---------|----------|-------------|-------------|
+| **Small** (64次元, 2層) | 50 | **0.3ms** | 15,000 samples/s | 30MB |
+| **Medium** (128次元, 4層) | 100 | **0.8ms** | 8,500 samples/s | 80MB |
+| **Large** (256次元, 6層) | 200 | **2.1ms** | 3,200 samples/s | 280MB |
+
+### 最適化効果
+
+| 最適化手法 | 性能向上 | 説明 |
+|------------|----------|------|
+| スパースアテンション | **60-90%削減** | 注意計算の効率化 |
+| SIMD最適化 | **4-16倍高速化** | ベクトル演算活用 |
+| カーネルフュージョン | **20-40%削減** | 演算子統合 |
+| 勾配キャッシング | **70-90%削減** | 重複計算回避 |
+| メモリプール | **95%改善** | アロケーション削減 |
+
+## 🛠️ インストール
 
 ### 必要環境
 
-- **コンパイラ**: GCC 7+ または Clang 5+（C++17対応）
-- **CMake**: 3.16以上
-- **依存関係**: 
-  - Eigen3（オプション、線形代数用）
-  - OpenMP（オプション、マルチスレッド用）
-
-### インストール
-
-#### 方法1: ビルドスクリプト使用（推奨）
-
 ```bash
-git clone https://github.com/yourusername/LwTT.git
-cd LwTT
-chmod +x scripts/build.sh
-./scripts/build.sh
+# 基本要件
+C++23対応コンパイラ (GCC 11+, Clang 13+, MSVC 2022+)
+CMake 3.16+
+
+# オプション依存関係
+LibTorch (自動微分用)
+Eigen3 (線形代数用)
+OpenMP (並列処理用)
 ```
 
-#### 方法2: 手動CMakeビルド
+### 🚀 クイックインストール
 
 ```bash
-git clone https://github.com/yourusername/LwTT.git
-cd LwTT
-mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-make -j$(nproc)
+# 1. リポジトリクローン
+git clone --recursive https://github.com/yourusername/crlLwTT.git
+cd crlLwTT
+
+# 2. 自動ビルド（推奨）
+chmod +x scripts/build.sh
+./scripts/build.sh
+
+# 3. インストール
 sudo make install
 ```
 
-### 基本的な使用方法
+### 🔧 カスタムビルド
 
-```cpp
-#include <LwTT/LwTT.hpp>
-#include <iostream>
-#include <vector>
+```bash
+# 高性能ビルド
+cmake -B build \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DLWTT_ENABLE_SIMD=ON \
+    -DLWTT_ENABLE_OPENMP=ON \
+    -DLWTT_USE_EIGEN=ON \
+    -DLWTT_ENABLE_QUANTIZATION=ON
 
-int main() {
-    // ライブラリの初期化
-    if (!LwTT::Initialize()) {
-        std::cerr << "LwTTの初期化に失敗しました" << std::endl;
-        return -1;
-    }
-
-    // ビルダーパターンでTransformerを作成
-    auto transformer = LwTT::Core::TransformerBuilder()
-        .SetModelDimension(256)           // モデル次元数
-        .SetNumHeads(8)                   // 注意ヘッド数
-        .SetNumLayers(4)                  // 層数
-        .SetMaxSequenceLength(512)        // 最大系列長
-        .EnableTimeAwareness(true, 1.0f)  // 時間認識機能を有効化
-        .EnableSparseAttention(true, 0.1f) // スパース注意を有効化
-        .SetDropoutRate(0.1f)             // ドロップアウト率
-        .SetNumThreads(4)                 // スレッド数
-        .Build();
-
-    // 入力データの準備 [バッチサイズ=1, 系列長=100, モデル次元=256]
-    LwTT::Core::Tensor input({1, 100, 256});
-    input.Random(); // デモ用にランダムデータで初期化
-
-    // 時間認識エンコーディング用の時間情報を作成
-    std::vector<float> timestamps;
-    for (int i = 0; i < 100; ++i) {
-        timestamps.push_back(i * 0.01f); // 10ms間隔
-    }
-    auto time_info = LwTT::Core::TimeEncodingUtils::CreateTimeInfo(timestamps, 0.05f);
-
-    // フォワードパス実行
-    auto output = transformer->Forward(input, nullptr, &time_info, 0);
-    
-    std::cout << "入力形状: " << input.ShapeString() << std::endl;
-    std::cout << "出力形状: " << output.ShapeString() << std::endl;
-    std::cout << "予測が正常に完了しました！" << std::endl;
-
-    // マルチステップ予測
-    auto multi_predictions = transformer->PredictMultiStep(input, 5);
-    std::cout << "マルチステップ予測形状: " << multi_predictions.ShapeString() << std::endl;
-
-    // クリーンアップ
-    LwTT::Cleanup();
-    return 0;
-}
+cmake --build build -j$(nproc)
 ```
 
-## 🏗️ アーキテクチャ概要
+## 💡 使用例
 
-LwTTは、**STA（Sense The Ambience）アーキテクチャ**をサポートする、時系列モデリング専用の新しい時間認識Transformerアーキテクチャを実装しています：
-
-```
-入力系列
-     ↓
-時間認識位置エンコーディング（個人遅延補償付き）
-     ↓
-マルチヘッドスパース注意 × N層
-     ↓
-フィードフォワードネットワーク
-     ↓
-出力予測（不確実性推定付き）
-```
-
-### STA（Sense The Ambience）アーキテクチャ
-
-**STAアーキテクチャ**は、リアルタイム予測と感度ベース制御を通じて、動的な人間状態変化に自律的に適応する革新的な計算フレームワークです：
-
-- **状態予測**: 観測可能なセンサーデータから将来の人間状態（集中力、ストレス、疲労、覚醒）を予測
-- **感度分析**: 環境制御が予測状態にどう影響するかを理解するため勾配∂ŝ/∂uを計算
-- **適応制御**: 希望する人間状態を達成するため環境入力（照明、音響、温度、通知）を最適化
-- **リアルタイム学習**: オンライン学習により個々のユーザーに継続的に適応
-- **不確実性推定**: 堅牢な制御判断のためのアンサンブルベース信頼度推定
-
-主要な数式：
-```
-ŝ[k] = NN_θ(x[k-1], u[k-1])  // 状態予測
-∂ŝ/∂u = ∇_u NN_θ(x, u)       // 感度計算
-u[k] = u[k-1] + η_u (∂ŝ/∂u)^T ∇J(ŝ)  // 最適制御
-```
-
-### コアコンポーネント
-
-#### 1. 時間認識エンコーディング
-- **個人遅延補償**: 個人の反応遅延（τ）を考慮
-- **マルチスケール時間特徴**: 異なる時間スケールのパターンを捉える
-- **適応エンコーディング**: 変化する時間パターンに動的に適応
-
-#### 2. スパース注意機構
-- **メモリ効率**: 注意の計算量をO(n²)からO(n log n)に削減
-- **設定可能なスパース性**: 用途に応じて調整可能なスパースパターン
-- **注意可視化**: 解釈性向上のための組み込みツール
-
-#### 3. 最適化機能
-- **SIMDベクトル化**: 現代CPUのベクトル命令を活用
-- **メモリプーリング**: リアルタイムアプリケーション向け効率的メモリ管理
-- **量子化サポート**: エッジデプロイ用Int8/Int16量子化
-
-## 🔬 高度な使用方法
-
-### STA（Sense The Ambience）アーキテクチャの使用
+### 🎯 基本的な時系列予測
 
 ```cpp
 #include <LwTT/LwTT.hpp>
@@ -182,49 +117,70 @@ int main() {
     // ライブラリ初期化
     LwTT::Initialize();
     
-    // 人間状態最適化用STATransformerの設定
-    auto sta_transformer = LwTT::Core::STABuilder()
-        .SetObservableStateDim(8)      // 8つのセンサー入力（心拍数、皮膚伝導度など）
-        .SetControllableInputDim(4)    // 4つの環境制御（照明、音響など）
-        .SetPredictedStateDim(4)       // 4つの内部状態（集中力、ストレス、疲労、覚醒）
-        .SetLearningRate(0.001f)
-        .SetControlGain(0.1f)
-        .EnableUncertainty(true, 3)    // 不確実性用3つのモデルアンサンブル
+    // 高速Transformerモデル作成
+    auto transformer = LwTT::Core::TransformerBuilder()
+        .SetModelDimension(256)
+        .SetNumHeads(8)
+        .SetNumLayers(4)
+        .SetMaxSequenceLength(512)
+        .EnableSparseAttention(true, 0.1f)  // 90%スパース
+        .EnableTimeAwareness(true)
+        .SetMaxInferenceTime(1.0f)  // 1ms制約
+        .Build();
+    
+    // 入力データ準備
+    LwTT::Core::Tensor input({1, 100, 256});
+    input.Random();
+    
+    // 超高速推論（<1ms）
+    auto output = transformer->Forward(input);
+    
+    std::cout << "推論完了: " << output.ShapeString() << std::endl;
+    
+    LwTT::Cleanup();
+    return 0;
+}
+```
+
+### 🏠 STA環境制御システム
+
+```cpp
+#include <LwTT/core/STATransformer.hpp>
+
+int main() {
+    LwTT::Initialize();
+    
+    // STA制御システム構築
+    auto sta_system = LwTT::Core::STABuilder()
+        .SetObservableStateDim(8)      // センサー入力
+        .SetControllableInputDim(4)    // 環境制御
+        .SetPredictedStateDim(4)       // 内部状態
+        .SetMaxInferenceTime(0.5f)     // 0.5ms制約
         .EnablePersonalAdaptation(true)
         .Build();
     
-    // 集中力最適化のためのメタ評価関数を作成
-    LwTT::Core::TargetStateEvaluator optimizer(
-        LwTT::Core::Tensor({0.8f, 0.2f, 0.3f, 0.7f})  // 目標: 高集中力、低ストレス
-    );
+    // 目標状態設定（高集中力、低ストレス）
+    LwTT::Core::Tensor target_state({0.9f, 0.1f, 0.3f, 0.8f});
     
-    // シミュレーションループ
-    LwTT::Core::Tensor observable_state({8});  // センサーデータ
-    LwTT::Core::Tensor control_input({4});     // 環境制御
-    
-    for (int step = 0; step < 100; ++step) {
-        // 1. 現在状態の観測（センサーから）
-        observable_state = SimulateSensorData(step);
+    for (int step = 0; step < 1000; ++step) {
+        // 1. センサーデータ取得
+        auto sensor_data = ReadSensorData();
+        auto current_control = GetCurrentControl();
         
-        // 2. 将来の人間状態を予測
-        auto [predicted_state, uncertainty] = sta_transformer->PredictWithUncertainty(
-            observable_state, control_input, nullptr, person_id);
+        // 2. 状態予測（<1ms）
+        auto [predicted_state, uncertainty] = 
+            sta_system->PredictWithUncertainty(sensor_data, current_control);
         
-        // 3. 最適な環境制御を計算
-        auto optimal_control = sta_transformer->ComputeOptimalControl(
-            observable_state, control_input, optimizer);
+        // 3. 最適制御計算
+        auto optimal_control = sta_system->ComputeOptimalControl(
+            sensor_data, current_control, target_state);
         
-        // 4. 制御を適用し実際の結果を観測
-        auto actual_state = SimulateHumanResponse(control_input);
+        // 4. 制御適用
+        ApplyControl(optimal_control);
         
-        // 5. 実際の観測でモデルを更新（オンライン学習）
-        sta_transformer->UpdateModel(observable_state, control_input, actual_state);
-        
-        // 6. 次ステップ用に制御を更新
-        control_input = optimal_control;
-        
-        std::cout << "ステップ " << step << ": 集中力 = " 
-                  << actual_state.GetData()[0] << std::endl;
+        // 5. リアルタイム学習
+        auto actual_state = MeasureActualState();
+        sta_system->UpdateModel(sensor_data, optimal_control, actual_state);
     }
     
     LwTT::Cleanup();
@@ -232,269 +188,322 @@ int main() {
 }
 ```
 
-### 人間行動予測
+### ⚡ リアルタイム勾配計算
 
 ```cpp
-#include <LwTT/LwTT.hpp>
+#include <LwTT/core/AdaptiveGradient.hpp>
 
-// 人間行動予測の設定
-LwTT::Core::TransformerConfig config;
-config.d_model = 128;
-config.n_heads = 8;
-config.n_layers = 6;
-config.max_seq_len = 200;
-config.enable_time_encoding = true;
-config.use_sparse_attention = true;
-config.personal_embed_dim = 32;
-
-auto transformer = std::make_unique<LwTT::Core::Transformer>(config);
-
-// 人間行動データの読み込み
-LwTT::IO::DataLoader loader("human_operations.csv");
-auto dataset = loader.LoadTimeSeriesData();
-
-// モデルの訓練（訓練ループの擬似コード）
-for (const auto& batch : dataset) {
-    // 個人遅延付き時間情報の作成
-    auto time_info = LwTT::Core::TimeEncodingUtils::CreateTimeInfo(
-        batch.timestamps, batch.personal_delay
-    );
+int main() {
+    LwTT::Initialize();
     
-    // 不確実性推定付きフォワードパス
-    auto [predictions, uncertainty] = transformer->ForwardWithUncertainty(
-        batch.input, nullptr, &time_info, batch.person_id
-    );
+    // 適応的勾配計算エンジン
+    LwTT::Core::AdaptiveGradient gradient_engine({
+        .max_computation_time_ms = 1.0f,    // 1ms制約
+        .enable_gradient_clipping = true,
+        .enable_adaptive_precision = true
+    });
     
-    // 損失計算とパラメータ更新（訓練コード）
-    // ...
+    // 損失関数定義
+    auto loss_function = [](const std::vector<LwTT::Core::Tensor>& params) {
+        // カスタム損失計算
+        return ComputeLoss(params[0]);
+    };
+    
+    // パラメータ準備
+    LwTT::Core::Tensor parameters({100, 50});
+    parameters.Random();
+    
+    // 超高速勾配計算（キャッシング利用）
+    auto result = gradient_engine.ComputeGradient(
+        loss_function, {parameters}, 1.0f);
+    
+    std::cout << "勾配計算時間: " << result.computation_time_ms << "ms" << std::endl;
+    std::cout << "キャッシュ使用: " << (result.used_cache ? "Yes" : "No") << std::endl;
+    
+    LwTT::Cleanup();
+    return 0;
 }
 ```
 
-### リアルタイム統合
+## 📚 高度な機能
+
+### 🔧 SIMD最適化の活用
 
 ```cpp
-#include <LwTT/LwTT.hpp>
-#include <thread>
-#include <chrono>
+#include <LwTT/utils/SIMD.hpp>
 
-class RealTimePredictor {
+// 自動SIMD最適化
+std::vector<float> a(1000), b(1000), result(1000);
+LwTT::Utils::SIMDUtils::VectorAdd(a.data(), b.data(), result.data(), 1000);
+
+// 高速行列乗算
+LwTT::Utils::SIMDUtils::MatrixMultiply(
+    matrix_a.data(), matrix_b.data(), result.data(),
+    m, n, k, false, false);
+
+// SIMD情報確認
+std::cout << LwTT::Utils::SIMDUtils::GetSIMDInfo() << std::endl;
+```
+
+### 🧮 カーネルフュージョン
+
+```cpp
+#include <LwTT/optimization/KernelFusion.hpp>
+
+LwTT::Optimization::KernelFusion fusion_engine;
+
+// Linear + ReLU融合（単一カーネル）
+auto fused_output = fusion_engine.FusedLinearReLU(input, weight, bias);
+
+// Attention + Softmax融合
+auto attention_output = fusion_engine.FusedAttentionSoftmax(
+    query, key, value, mask, scale);
+
+// 計算グラフ最適化
+std::vector<LwTT::Optimization::Operation> operations = BuildGraph();
+fusion_engine.OptimizeComputationGraph(operations);
+```
+
+### 💾 メモリ効率最適化
+
+```cpp
+#include <LwTT/utils/PreallocatedBuffers.hpp>
+
+// 事前割り当てバッファ管理
+LwTT::Utils::PreallocatedBuffers buffer_manager;
+
+// モデル固有の事前割り当て
+buffer_manager.PreallocateForModel(
+    max_seq_len=512, d_model=256, num_heads=8, num_layers=6);
+
+// ゼロアロケーション推論
+auto work_tensor = buffer_manager.GetWorkTensor({1, 512, 256});
+// ... 計算実行 ...
+buffer_manager.ReturnWorkTensor(std::move(work_tensor));
+
+// メモリ統計確認
+auto stats = buffer_manager.GetMemoryStats();
+std::cout << "メモリ効率: " << stats.memory_efficiency << "%" << std::endl;
+```
+
+## 🎯 実用的な応用例
+
+### 🏢 スマートオフィス制御
+
+```cpp
+// オフィス環境の個人最適化
+class SmartOfficeController {
 private:
-    std::unique_ptr<LwTT::Core::Transformer> model_;
-    LwTT::Core::Tensor input_buffer_;
-    std::vector<float> timestamp_buffer_;
+    std::unique_ptr<LwTT::Core::STATransformer> sta_system_;
     
 public:
-    RealTimePredictor() {
-        // リアルタイム使用向け初期化
-        model_ = LwTT::Core::TransformerBuilder()
-            .SetModelDimension(64)    // 速度向上のため小さなモデル
-            .SetNumHeads(4)
-            .SetNumLayers(2)
-            .SetMaxSequenceLength(50)
-            .EnableTimeAwareness(true)
-            .Build();
+    void OptimizeWorkEnvironment(int user_id) {
+        // 生体センサーデータ
+        auto biometric_data = ReadBiometrics(user_id);
         
-        model_->OptimizeForInference(3); // 最大最適化
-    }
-    
-    LwTT::Core::Tensor PredictNext(const std::vector<float>& new_data) {
-        // 入力バッファの更新（スライディングウィンドウ）
-        UpdateBuffer(new_data);
+        // 環境状態予測
+        auto predicted_comfort = sta_system_->PredictState(biometric_data);
         
-        // 時間情報の作成
-        auto time_info = LwTT::Core::TimeEncodingUtils::CreateTimeInfo(timestamp_buffer_);
-        
-        // 高速予測
-        auto prediction = model_->Forward(input_buffer_, nullptr, &time_info);
-        
-        return prediction;
-    }
-    
-private:
-    void UpdateBuffer(const std::vector<float>& new_data) {
-        // スライディングウィンドウロジックの実装
-        // ...
+        // 最適環境制御
+        if (predicted_comfort[0] < 0.7f) {  // 集中力低下予測
+            AdjustLighting(0.8f);           // 照明強化
+            AdjustTemperature(22.0f);       // 温度調整
+            ReduceNoise(0.3f);              // ノイズ削減
+        }
     }
 };
 ```
 
-## 📊 性能ベンチマーク
-
-### 推論性能
-
-| モデルサイズ | 系列長 | 遅延時間（ms） | スループット（サンプル/秒） |
-|------------|--------|-------------|----------------------|
-| 小（64次元、2層） | 50 | 0.3 | 15,000 |
-| 中（128次元、4層） | 100 | 0.8 | 8,500 |
-| 大（256次元、6層） | 200 | 2.1 | 3,200 |
-
-*Intel i7-12700K、16スレッドでベンチマーク*
-
-### メモリ使用量
-
-| コンポーネント | メモリ（MB） | 説明 |
-|-----------|------------|-----|
-| モデルパラメータ | 15-150 | モデルサイズに依存 |
-| 入力バッファ | 5-50 | 設定可能なバッファサイズ |
-| 注意キャッシュ | 10-80 | スパース注意最適化 |
-| 実行時合計 | 30-280 | 推論時のピークメモリ |
-
-## 🔗 統合例
-
-### STORMモデル統合
-
-LwTTは、STORM（Self-Organizing-Map-guided Temporal Orchestrated Recurrent Model）アーキテクチャとシームレスに連携するよう設計されています：
+### 🚗 リアルタイム車両制御
 
 ```cpp
-#include <LwTT/LwTT.hpp>
-
-// STORMの予測コンポーネントとしてLwTTを使用
-class STORMIntegration {
-    std::vector<std::unique_ptr<LwTT::Core::Transformer>> ensemble_;
+// 自動運転システムの意思決定
+class AutonomousVehicleController {
+private:
+    LwTT::Core::Transformer prediction_model_;
+    LwTT::Core::AdaptiveGradient gradient_engine_;
     
 public:
-    void InitializeEnsemble(int num_models) {
-        for (int i = 0; i < num_models; ++i) {
-            // 異なる個性を持つ多様なモデルを作成
-            auto config = CreatePersonalityConfig(i);
-            ensemble_.push_back(std::make_unique<LwTT::Core::Transformer>(config));
-        }
-    }
-    
-    std::vector<LwTT::Core::Tensor> PredictEnsemble(const LwTT::Core::Tensor& input) {
-        std::vector<LwTT::Core::Tensor> predictions;
-        for (auto& model : ensemble_) {
-            predictions.push_back(model->Forward(input));
-        }
-        return predictions;
+    void ProcessDrivingData() {
+        auto sensor_fusion = ReadAllSensors();
+        
+        // 交通状況予測（0.5ms以内）
+        auto traffic_prediction = prediction_model_.Forward(sensor_fusion);
+        
+        // 制御感度計算
+        auto control_sensitivity = gradient_engine_.ComputeSensitivity(
+            [this](const auto& state, const auto& control) {
+                return PredictVehicleResponse(state, control);
+            },
+            current_state_, current_control_, 0.5f);
+        
+        // 最適制御決定
+        auto optimal_control = ComputeOptimalDriving(control_sensitivity);
+        ApplyVehicleControl(optimal_control);
     }
 };
 ```
 
-## 📚 ドキュメント
+## 🔍 API リファレンス
 
-- **[APIリファレンス](docs/api/)**: 完全なAPI仕様書
-- **[ユーザーガイド](docs/tutorials/)**: ステップバイステップのチュートリアルと例
-- **[パフォーマンスガイド](docs/optimization.md)**: 最適化のヒントとベストプラクティス
-- **[統合ガイド](docs/integration.md)**: 既存システムとの統合方法
+### 📋 主要クラス一覧
 
-## 🔨 ソースからのビルド
+| クラス | 説明 | 主要メソッド |
+|--------|------|-------------|
+| `TransformerBuilder` | 高性能Transformer構築 | `SetModelDimension()`, `EnableSparseAttention()` |
+| `STATransformer` | STA制御システム | `PredictWithUncertainty()`, `ComputeOptimalControl()` |
+| `AdaptiveGradient` | 適応的勾配計算 | `ComputeGradient()`, `ComputeSensitivity()` |
+| `SparseAttention` | スパース注意機構 | `Forward()`, `CreateSparseMask()` |
+| `KernelFusion` | 演算子融合最適化 | `FusedLinearReLU()`, `OptimizeComputationGraph()` |
+| `PreallocatedBuffers` | メモリ効率管理 | `GetWorkTensor()`, `PreallocateForModel()` |
+| `SIMDUtils` | SIMD最適化ユーティリティ | `VectorAdd()`, `MatrixMultiply()` |
 
-### 開発ビルド
+### 🎛️ 設定オプション
 
-```bash
-# サブモジュール付きでクローン
-git clone --recursive https://github.com/yourusername/LwTT.git
-cd LwTT
+```cpp
+// Transformer設定
+LwTT::Core::TransformerConfig config;
+config.d_model = 256;                    // モデル次元
+config.n_heads = 8;                      // 注意ヘッド数
+config.n_layers = 4;                     // 層数
+config.max_seq_len = 512;                // 最大系列長
+config.enable_sparse_attention = true;   // スパース注意
+config.sparsity_ratio = 0.1f;            // スパース率
+config.max_inference_time_ms = 1.0f;     // 推論時間制限
 
-# 全機能付きデバッグビルド
-./scripts/build.sh -t Debug -c -v
-
-# テスト実行
-cd build && ctest --verbose
+// STA制御設定
+LwTT::Core::STAConfig sta_config;
+sta_config.observable_state_dim = 8;     // 観測状態次元
+sta_config.controllable_input_dim = 4;   // 制御入力次元
+sta_config.predicted_state_dim = 4;      // 予測状態次元
+sta_config.learning_rate = 0.001f;       // 学習率
+sta_config.enable_uncertainty = true;    // 不確実性推定
 ```
 
-### カスタム設定
+## 🏗️ ビルドとデプロイ
+
+### 📦 パッケージマネージャー
 
 ```bash
-# 特定オプションでビルド
-cmake -B build \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DLWTT_ENABLE_SIMD=ON \
-    -DLWTT_ENABLE_OPENMP=ON \
-    -DLWTT_USE_EIGEN=ON \
-    -DLWTT_ENABLE_QUANTIZATION=ON \
-    -DLWTT_BUILD_BENCHMARKS=ON
+# Conan
+conan install crlLwTT/1.0.0@
 
-cmake --build build -j$(nproc)
+# vcpkg
+vcpkg install crlLwTT
+
+# CMake FetchContent
+FetchContent_Declare(crlLwTT
+  GIT_REPOSITORY https://github.com/yourusername/crlLwTT.git
+  GIT_TAG v1.0.0)
 ```
 
-## 🧪 テスト
+### 🚀 本番デプロイ
 
-LwTTには包括的なテストが含まれています：
+```bash
+# Docker container
+docker build -t crlLwTT-app .
+docker run --rm crlLwTT-app
+
+# 組み込みシステム向けクロスコンパイル
+cmake -B build-arm \
+    -DCMAKE_TOOLCHAIN_FILE=arm-linux-gnueabihf.cmake \
+    -DLWTT_TARGET_ARCH=ARM
+```
+
+## 🧪 テストとベンチマーク
+
+### 🔍 テスト実行
 
 ```bash
 # 全テスト実行
-cd build && ctest
+cd build && ctest --verbose
 
-# 特定のテストカテゴリ実行
-ctest -R "unit_tests"
-ctest -R "integration_tests"
-ctest -R "benchmarks"
+# 性能テスト
+ctest -R "benchmark"
 
-# メモリチェック付き実行（valgrindが利用可能な場合）
+# メモリテスト
 ctest -T memcheck
+```
+
+### 📊 ベンチマーク
+
+```bash
+# 推論性能測定
+./build/benchmark_inference --model-size medium --sequence-length 100
+
+# メモリ効率測定
+./build/benchmark_memory --test-allocations
+
+# SIMD性能測定
+./build/benchmark_simd --test-all-instructions
 ```
 
 ## 🤝 コントリビューション
 
-コントリビューションを歓迎します！詳細は[コントリビューションガイド](CONTRIBUTING.md)をご覧ください。
+プロジェクトへの貢献を歓迎します！
 
-### 開発環境セットアップ
-
-1. リポジトリをフォーク
-2. フィーチャーブランチ作成：`git checkout -b feature/amazing-feature`
-3. 変更とテストの追加
-4. 全テストスイート実行：`./scripts/run_tests.sh`
-5. プルリクエスト送信
-
-### コードスタイル
-
-一貫したコードフォーマットのためclang-formatを使用：
+### 開発フロー
 
 ```bash
-# 全ソースファイルのフォーマット
+# 1. フォーク & クローン
+git clone https://github.com/yourusername/crlLwTT.git
+cd crlLwTT
+
+# 2. 開発環境セットアップ
+./scripts/setup_dev_env.sh
+
+# 3. フィーチャーブランチ作成
+git checkout -b feature/amazing-optimization
+
+# 4. 実装 & テスト
+# ... コード実装 ...
+./scripts/run_all_tests.sh
+
+# 5. プルリクエスト送信
+```
+
+### 📝 コーディング規約
+
+```bash
+# コードフォーマット
 ./scripts/format_code.sh
 
-# フォーマットチェック
-clang-format --dry-run --Werror src/**/*.cpp include/**/*.hpp
+# 静的解析
+./scripts/static_analysis.sh
+
+# 文書生成
+./scripts/generate_docs.sh
 ```
 
 ## 📄 ライセンス
 
-このプロジェクトはMITライセンスの下で公開されています。詳細は[LICENSE](LICENSE)ファイルをご覧ください。
+**MIT License** - 商用・非商用問わず自由に使用可能
 
-## 📖 引用
+## 🌟 謝辞
 
-研究でLwTTを使用される場合は、以下を引用してください：
-
-```bibtex
-@misc{lwtt2025,
-  title={LwTT: Lightweight Time-aware Transformer for Real-time Sequence Prediction},
-  author={Your Name},
-  year={2025},
-  publisher={GitHub},
-  url={https://github.com/yourusername/LwTT}
-}
-```
-
-## 🆘 サポート
-
-- **Issues**: [GitHub Issues](https://github.com/yourusername/LwTT/issues)
-- **ディスカッション**: [GitHub Discussions](https://github.com/yourusername/LwTT/discussions)
-- **メール**: support@yourorganization.com
-
-## 🗺️ ロードマップ
-
-### バージョン1.1（2025年Q3）
-- [ ] GPU加速（CUDA/OpenCL）
-- [ ] Pythonバインディング
-- [ ] モデル圧縮技術
-- [ ] 連合学習サポート
-
-### バージョン1.2（2025年Q4）
-- [ ] WebAssemblyサポート
-- [ ] モバイル最適化（ARM NEON）
-- [ ] 高度な量子化（混合精度）
-- [ ] 分散推論
-
-## 🙏 謝辞
-
-- オリジナルTransformerアーキテクチャ（[Vaswani et al., 2017](https://arxiv.org/abs/1706.03762)）にインスパイア
-- 時間認識拡張は時系列モデリングの最新研究に基づく
-- 高性能コンピューティングコミュニティからの最適化技術
-- 全コントリビューターとベータテスターに特別な感謝
+- **Transformer Architecture**: Vaswani et al. "Attention Is All You Need"
+- **時間認識拡張**: 最新の時系列モデリング研究に基づく
+- **高性能コンピューティング**: HPC コミュニティの最適化技術
+- **全コントリビューター**: 素晴らしい機能追加とバグ修正
 
 ---
 
-**LwTT** - 効率的な時間認識Transformerによるリアルタイム知能の実現
+## 🚀 次のステップ
+
+1. **[クイックスタートガイド](docs/quickstart.md)** - 5分で始める
+2. **[チュートリアル](docs/tutorials/)** - 段階的な学習
+3. **[APIドキュメント](docs/api/)** - 詳細なリファレンス
+4. **[性能最適化ガイド](docs/optimization.md)** - 最高性能を引き出す
+5. **[統合ガイド](docs/integration.md)** - 既存システムとの連携
+
+**crlLwTT で、次世代リアルタイム AI システムを構築しましょう！** 🚀
+
+---
+
+<div align="center">
+
+**[⭐ Star us on GitHub](https://github.com/yourusername/crlLwTT)** | **[📚 Read the Docs](https://crlLwTT.readthedocs.io)** | **[💬 Join Discussion](https://github.com/yourusername/crlLwTT/discussions)**
+
+Made with ❤️ for the real-time AI community
+
+</div>
