@@ -341,6 +341,7 @@ KernelFusion::OptimizationStats KernelFusion::GetOptimizationStats() const {
             case FusedOperationType::LayerNormReLU:
             case FusedOperationType::GELUDropout:
             case FusedOperationType::AttentionSoftmax:
+            case FusedOperationType::TransformerBlock:
                 stats.fused_operations++;
                 break;
             case FusedOperationType::Single:
